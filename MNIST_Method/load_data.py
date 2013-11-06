@@ -1,4 +1,8 @@
 #!/usr/bin/python
+
+import theano
+import theano.tensor as T
+import numpy
 import transform_data_to_format as tdtf
 
 def load_data(dataset):
@@ -20,9 +24,10 @@ def load_data(dataset):
     #numpy.ndarray of 1 dimensions (vector)) that have the same length as
     #the number of rows in the input. It should give the target
     #target to the example with the same index in the input.
-    test_set = tftd.read_test_data_xy_to_ndarray("../data/test.csv",limit=100)
-    valid_set = tftd.read_data_to_ndarray("../data/valid.csv",limit=100)
-    train_set = tftd.read_data_to_ndarray("../data/train.csv",limit=100)
+    test_set = tdtf.read_test_data_xy_to_ndarray(dataset +
+    "test.csv",limit=28000)
+    valid_set = tdtf.read_data_to_ndarray(dataset + "valid.csv",limit=28000)
+    train_set = tdtf.read_data_to_ndarray(dataset + "train.csv",limit=28000)
 
     def shared_dataset(data_xy, borrow=True):
         """ Function that loads the dataset into shared variables

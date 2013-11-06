@@ -1,27 +1,10 @@
 #!/usr/bin/python
-"""This tutorial introduces the LeNet5 neural network architecture
-using Theano.  LeNet5 is a convolutional neural network, good for
-classifying images. This tutorial shows how to build the architecture,
-and comes with all the hyper-parameters you need to reproduce the
-paper's MNIST results.
+'''
+modified by hp_carrot
+2013-11-06
+try MNIST on convolution network
+'''
 
-
-This implementation simplifies the model in the following ways:
-
- - LeNetConvPool doesn't implement location-specific gain and bias parameters
- - LeNetConvPool doesn't implement pooling by average, it implements pooling
-   by max.
- - Digit classification is implemented with a logistic regression rather than
-   an RBF network
- - LeNet5 was not fully-connected convolutions at second layer
-
-References:
- - Y. LeCun, L. Bottou, Y. Bengio and P. Haffner:
-   Gradient-Based Learning Applied to Document
-   Recognition, Proceedings of the IEEE, 86(11):2278-2324, November 1998.
-   http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf
-
-"""
 import cPickle
 import gzip
 import os
@@ -36,9 +19,12 @@ import theano.tensor as T
 from theano.tensor.signal import downsample
 from theano.tensor.nnet import conv
 
-import load_data
+from logistic_sgd import LogisticRegression
 from mlp import HiddenLayer
+import load_data
+import transform_data_to_format as tdtf
 
+DataHome = "/home/hphp/Documents/data/Kaggle/MNISTData/"
 
 class LeNetConvPoolLayer(object):
     """Pool Layer of a convolutional network """
@@ -105,8 +91,8 @@ class LeNetConvPoolLayer(object):
         self.params = [self.W, self.b]
 
 
-def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
-                    dataset='../data/mnist.pkl.gz',
+def evaluate_lenet5(learning_rate=0.1, n_epochs=1000,
+                    dataset=DataHome,
                     nkerns=[20, 50], batch_size=500):
     """ Demonstrates lenet on MNIST dataset
 
@@ -190,7 +176,13 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
 
     # create a function to compute the mistakes that are made by the model
     test_model = theano.function([index], layer3.errors(y),
-             givens={
+            givens={
+                x: test_set_x[index * batch_size: (index + 1) * batch_size],
+                y: test_set_y[index * batch_size: (index + 1) * batch_size]})
+
+    test_results = theano.function(inputs=[index],
+            outputs= layer3.y_pred,
+            givens={
                 x: test_set_x[index * batch_size: (index + 1) * batch_size],
                 y: test_set_y[index * batch_size: (index + 1) * batch_size]})
 
@@ -224,7 +216,7 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
     ###############
     print '... training'
     # early-stopping parameters
-    patience = 10000  # look as this many examples regardless
+    patience = 10000 # look as this many examples regardless
     patience_increase = 2  # wait this much longer when a new best is
                            # found
     improvement_threshold = 0.995  # a relative improvement of this much is
@@ -289,6 +281,16 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
                 break
 
     end_time = time.clock()
+    print "writing test results"
+    test_res = [test_results(i)
+        for i in xrange(n_test_batches)]
+    a = []
+    for i in range(len(test_res)):
+        for ele in test_res[i]:
+            a.append(ele)
+
+    print a,n_test_batches
+    tdtf.write_to_csv(a,DataHome + 'pringle_MINST_conv.csv')
     print('Optimization complete.')
     print('Best validation score of %f %% obtained at iteration %i,'\
           'with test performance %f %%' %

@@ -80,3 +80,22 @@ def read_data_to_ndarray(filname="../data/train.csv", limit=None):
     return (data_x, data_y)
 
 
+def read_csv_data_to_ndarray(filname="../data/train.csv", limit=None):
+
+    print "Reading data %s" % filname
+    data = []
+    labels = []
+    csv_reader = csv.reader(open(filname, "r"), delimiter=",")
+    index = 0
+    for row in csv_reader:
+        index += 1
+        if index == 1:
+            continue
+        labels.append(int(row[0]))
+        row = row[1:]
+        data.append(np.float32(row))
+        if limit != None and index == limit + 1:
+            break
+    data_x=np.asarray(data)
+    data_y=np.asarray(labels,dtype=np.int32)
+    return (data_x, data_y)
