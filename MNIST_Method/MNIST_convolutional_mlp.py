@@ -91,7 +91,7 @@ class LeNetConvPoolLayer(object):
         self.params = [self.W, self.b]
 
 
-def evaluate_lenet5(learning_rate=0.1, n_epochs=1000,
+def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
                     dataset=DataHome,
                     nkerns=[20, 50], batch_size=500):
     """ Demonstrates lenet on MNIST dataset
@@ -243,7 +243,7 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=1000,
             iter = (epoch - 1) * n_train_batches + minibatch_index
 
             if iter % 100 == 0:
-                print 'training @ iter = ', iter
+                print 'training @ iter = ', iter , ' patience = ' , patience
             cost_ij = train_model(minibatch_index)
 
             if (iter + 1) % validation_frequency == 0:
@@ -300,8 +300,10 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=1000,
                           ' ran for %.2fm' % ((end_time - start_time) / 60.))
 
 if __name__ == '__main__':
+    start_sec = time.time()
     evaluate_lenet5()
-
+    end_sec = time.time()
+    print 'practical using time : %.2fm ' % ((end_sec - start_sec) / 60.)
 
 def experiment(state, channel):
     evaluate_lenet5(state.learning_rate, dataset=state.dataset)
