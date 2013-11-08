@@ -3,6 +3,10 @@ import os
 import sys
 '''
     modified by hp_carrot
+    2013-11-08
+    extract feature of test data.
+
+    modified by hp_carrot
     2013-11-05
     wanna see part image will be after outline-filtered.
     the results goes well.
@@ -16,6 +20,7 @@ import theano.tensor as T
 from theano.tensor.nnet import conv
 rng = numpy.random.RandomState(23455)
 import transform_data_to_format as tdtf
+DataHome = "/home/hphp/Documents/data/Kaggle/DogVsCatData/"
 
 # instantiate 4D tensor for input
 input = T.tensor4(name='input')
@@ -71,7 +76,7 @@ output = T.nnet.sigmoid(conv_out + b.dimshuffle('x', 0, 'x', 'x'))
 # create theano function to compute filtered images
 f = theano.function([input], output)
 
-piclist = os.listdir("../data/train/")
+piclist = os.listdir(DataHome + "test1/")
 train_list = []
 
 start = 0
@@ -89,7 +94,7 @@ for i in range(start,end): #len(piclist)):
     else:
         sign = 1
 # open random image of dimensions 639x516
-    img = Image.open(open("../data/train/" + img_route ))
+    img = Image.open(open(DataHome + "test1/" + img_route ))
     img_w , img_h = img.size
     img = img.resize((100,100),Image.ANTIALIAS)
 #img = Image.open(open("/home/hphp/Documents/code/DeepLearning/DeepLearningTutorials/doc/images/3wolfmoon.jpg"))
@@ -126,5 +131,5 @@ for i in range(start,end): #len(piclist)):
     #print type(tu),len(tu)
     train_list.append(tu)
 print start,end
-tdtf.write_content_to_csv(train_list,"../data/train.csv")
+tdtf.write_content_to_csv(train_list,DataHome + "test1.csv")
 print start,end
