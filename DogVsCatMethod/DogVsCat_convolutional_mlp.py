@@ -21,6 +21,8 @@ from theano.tensor.nnet import conv
 
 if not "../DataProcess/" in sys.path:
     sys.path.append("../DataProcess/")
+if not "../DL_Method/" in sys.path:
+    sys.path.append("../DL_Method/")
 from logistic_sgd import LogisticRegression
 from mlp import HiddenLayer
 import load_data
@@ -95,7 +97,7 @@ class LeNetConvPoolLayer(object):
 
 def evaluate_lenet5(learning_rate=0.1, n_epochs=10,
                     dataset=DataHome,
-                    nkerns=[20, 50], batch_size=10):
+                    nkerns=[20, 50], batch_size=50):
     """ Demonstrates lenet on MNIST dataset
 
     :type learning_rate: float

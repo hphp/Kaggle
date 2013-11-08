@@ -27,10 +27,10 @@ def load_data(dataset):
     #numpy.ndarray of 1 dimensions (vector)) that have the same length as
     #the number of rows in the input. It should give the target
     #target to the example with the same index in the input.
-    test_set = tdtf.read_test_data_xy_to_ndarray(dataset +
-    "test.csv",limit=10)
-    valid_set = tdtf.read_data_to_ndarray(dataset + "train.csv",limit=10)
-    train_set = tdtf.read_data_to_ndarray(dataset + "train.csv",limit=10)
+    test_set = tdtf.read_csv_data_to_ndarray(dataset +
+    "test1.csv",limit=100)
+    valid_set = tdtf.read_csv_data_to_ndarray(dataset + "train.csv",limit=100)
+    train_set = tdtf.read_csv_data_to_ndarray(dataset + "train.csv",limit=100)
 
     def shared_dataset(data_xy, borrow=True):
         """ Function that loads the dataset into shared variables
