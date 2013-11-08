@@ -1,0 +1,24 @@
+
+2013-11-09
+Method.Lenet_Method
+mnist with lenet method , runs a 98.929% score , which is very excited !!
+train_example_number = 28000
+valid_example_number = 28000
+with 7000 overlap
+test_number = 28000
+train and test for 986.12 minutes. and 9800 iters and with epoch = 200 , batch_size = 500.
+batch_number = 56
+
+2013-11-03
+Method.KNearestNeighbors_Method
+a method that comes better than NearestNeighborsCentroid method 
+with about 90% precision , and using 2000 training data , we get with 90.18% test precision on Kaggle
+2013-11-03
+with 40000 training we get 96.514% score , which is good !!!!
+
+2013-11-02
+Using PCA Method
+pca train data and valid data , and use the transformed features to calculate .
+precision of valid data : 10-20 % , with 2000 train examples. , pca 100 - 400
+component.
+it is very terrible... seems after pca , physical distance get confused. 
