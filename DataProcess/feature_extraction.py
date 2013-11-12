@@ -4,6 +4,7 @@ import sys
 '''
     modified by hp_carrot
     2013-11-08
+    change float64 to float32
     extract feature of test data.
 
     modified by hp_carrot
@@ -102,7 +103,7 @@ for i in range(start,end): #len(piclist)):
     img_w , img_h = img.size
     #print img.size
     print i,img_route
-    img = numpy.asarray(img, dtype='float64') / 256.
+    img = numpy.asarray(img, dtype='float32') / 256.
 
 # put image in 4D tensor of shape (1, 3, height, width)
     img_ = img.swapaxes(0, 2).swapaxes(1, 2).reshape(1, 3, img_h, img_w)
