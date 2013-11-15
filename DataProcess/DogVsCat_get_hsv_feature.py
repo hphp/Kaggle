@@ -3,6 +3,8 @@
 '''
     written by hp_carrot
     2013-11-15
+    change it to get features from whole set.
+    write to .csv file
 
     2013-11-14
     load picture , resize , cut into N*N patches , get hsv values , load into features.
@@ -146,14 +148,31 @@ def get_feature(img):
                 features[feature_index] = 1
     return features
 
-piclist = os.listdir(DataHome + "train/")
-train_list = []
+print "get argv"
 start = 0
-end = len(piclist)
-if len(sys.argv) > 2:
+end = 0
+img_data_dir = "test1/"
+data_csv_file = "test.csv"
+if len(sys.argv) > 1:
     start = int(sys.argv[1])
+if len(sys.argv) > 2:
     end = int(sys.argv[2])
-train_set = []
+if len(sys.argv) > 3:
+    img_data_dir = sys.argv[3]
+if len(sys.argv) > 4:
+    data_csv_file = sys.argv[4]
+print start,end,img_data_dir,data_csv_file
+
+"print start listing"
+piclist = os.listdir(DataHome + img_data_dir)
+train_list = []
+data_set = []
+
+if end == 0:
+    end = len(piclist)
+if end >= len(piclist):
+    end = len(piclist)
+
 for i in range(start,end): #len(piclist)):
     img_route = piclist[i]
     img_route_list = img_route.split(".")
@@ -162,20 +181,20 @@ for i in range(start,end): #len(piclist)):
         breed = 0
     else:
         breed = 1
-    img = Image.open(open(DataHome + "train/" + img_route))
+    img = Image.open(open(DataHome + img_data_dir + img_route))
     img_w , img_h = img.size
-    if (img_w < 250) | (img_h < 250) :
-        continue
+    #if (img_w < 250) | (img_h < 250) :
+    #    continue
     #print "resizing"
     img = img.resize((250,250),Image.ANTIALIAS)
     features = get_feature(img)
     breed_list = [breed]
     img_info = breed_list + features
     #print type(img_info),len(img_info)
-    train_set.append(img_info)
+    data_set.append(img_info)
 print "writing from %d to %d " % (start,end)
-#print train_set
-tdtf.write_content_to_csv(train_set,DataHome + "train.csv" )
+#print data_set 
+tdtf.write_content_to_csv(data_set,DataHome + data_csv_file)
 #print len(features)
 #print features
 #print features == features
