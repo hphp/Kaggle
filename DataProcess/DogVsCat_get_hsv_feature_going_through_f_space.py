@@ -2,8 +2,10 @@
 
 '''
     written by hp_carrot
-    2013-11-14
+    2013-11-15
     load picture , resize , cut into N*N patches , get hsv values , load into features.
+
+    going through the whole feature space to check if corresponding place is 1.
 
     Part 1:
     1.for each picture , resize . to 250*250 if bigger ,
@@ -11,14 +13,13 @@
     2.cut to partions.
     3.check each partion if in [S_s,S_e]*[C_s,C_e]*[H_s,H_e]
     4.record in pickle/file
-    2013-11-14
-    19:34 fulfill without decoration
 '''
 import cPickle 
 import numpy
 import pylab
 from PIL import Image
 import colorsys
+import time
 DataHome = "/home/hphp/Documents/data/Kaggle/DogVsCatData/"
 
 def get_feature_index(l_id,l_N):
@@ -28,27 +29,28 @@ def get_feature_index(l_id,l_N):
         index += l_id[i]
     return index
 
+print "going through the whole feature space to check if corresponding place is 1."
 print "resizing"
 img = Image.open(open(DataHome + "train/" + "cat.5123.jpg"))
 img = img.resize((250,250),Image.ANTIALIAS)
 img_w , img_h = img.size
 print img.size
 img = numpy.asarray(img, dtype='float32') / 256
-print img.shape
-print img[0][0]
+#print img.shape
+#print img[0][0]
 rgb = img[0][0]
-print type(rgb) , rgb.shape , rgb
+#print type(rgb) , rgb.shape , rgb
 print "getting hsv"
 hsv = colorsys.rgb_to_hsv(rgb[0],rgb[1],rgb[2])
 
 
-print type(hsv),hsv
+#print type(hsv),hsv
 # float64 , float32 , float32
 print "getting feature"
 N = 5
-CH = 2
+CH = 2 
 CS = 2 
-CV = 1
+CV = 1 
 each_h_part = img_h / N
 each_w_part = img_w / N
 each_H_part = 100 / CH
@@ -59,6 +61,7 @@ features = []
 # using this method , it cost O( CH*CS*CV*img_h*img_w )
 # we can also go through the whole img , and fulfill its features.
 print "first methoding"
+start_time = time.clock()
 for ih_c in range(CH):
     img_h_s = ih_c * each_H_part
     img_h_e = min ( ((ih_c+1) * each_H_part) , 100)
@@ -93,38 +96,8 @@ for ih_c in range(CH):
                    features.append(flag)
 print len(features) , type(features)
 print features
-
-print 'second methoding'
-feature_2 = [0] * N * N * CH * CS * CV
-for h_i in range(img_h):
-    for w_i in range(img_w):
-        rgb = img[h_i][w_i]
-        img_h_v , img_s_v , img_v_v = colorsys.rgb_to_hsv(rgb[0],rgb[1],rgb[2])
-        img_h_v = numpy.float32(img_h_v) * 100.
-        img_s_v = img_s_v * 100.
-        img_v_v = img_v_v * 100.
-
-        h_part_i = int(h_i / each_h_part)
-        w_part_i = int(w_i / each_w_part)
-        H_part_i = int((img_h_v-1) / each_H_part)
-        S_part_i = int((img_s_v-1) / each_S_part)
-        V_part_i = int((img_v_v-1) / each_V_part)
-
-        list_id = ( \
-                  H_part_i \
-                , S_part_i \
-                , V_part_i \
-                , h_part_i \
-                , w_part_i \
-                )
-        list_N = (CH,CS,CV,N,N)
-        feature_index = get_feature_index(list_id,list_N)
-        feature_2[feature_index] = 1
-
-
-print len(feature_2)
-print feature_2
-print features == feature_2
-
-feature_file = open('color_feature.in','w')
-cPickle.dump(feature_2,feature_file)
+end_time = time.clock()
+print start_time,end_time,type(start_time)
+print "using %.2f sec " % ((end_time - start_time))
+#feature_file = open('','w')
+#cPickle.dump(features,feature_file)
