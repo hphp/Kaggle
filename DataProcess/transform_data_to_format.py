@@ -99,7 +99,8 @@ def read_csv_data_to_ndarray(filname="../data/train.csv", limit=None):
     data_y=np.asarray(labels,dtype=np.int32)
     return (data_x, data_y)
 
-def read_csv_data_to_int_list(filname="train.csv", limit=None):
+def read_csv_data_to_int_list(filname="train.csv", limit=None, header_n = 1):
+    # header_n = line numbers of header.
 
     print "Reading data %s" % filname
     data = []
@@ -108,12 +109,12 @@ def read_csv_data_to_int_list(filname="train.csv", limit=None):
     index = 0
     for row in csv_reader:
         index += 1
-        if index == 1:
+        if (header_n == 1) & (index <= header_n ):
             continue
         labels.append(int(row[0]))
         row = map ( int , (row[1:]))
         data.append(row)
-        if limit != None and index == limit + 1:
+        if limit != None and index == limit + header_n:
             break
     data_x=data
     data_y=labels
