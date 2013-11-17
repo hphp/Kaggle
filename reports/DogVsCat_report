@@ -1,0 +1,6 @@
+
+2013-11-17
+using (patch)_(HSV-color-Channel-region) as features
+train all 25000 images.
+N,CH,CS,CV = 5,10,5,5
+the test accurancy comes to 50.9 % 
