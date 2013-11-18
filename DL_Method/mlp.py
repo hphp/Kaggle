@@ -1,3 +1,9 @@
+'''
+2013-11-18
+by hp_carrot
+add __getstate__ function ;
+add W,b as init parameter
+'''
 """
 This tutorial introduces the multilayer perceptron using Theano.
 
@@ -101,6 +107,8 @@ class HiddenLayer(object):
         # parameters of the model
         self.params = [self.W, self.b]
 
+    def __getstate(self):
+        return (self.W,self.b)
 
 class MLP(object):
     """Multi-Layer Perceptron Class
