@@ -59,7 +59,7 @@ def read_test_data_to_ndarray(filname="../data/test.csv", limit=None):
     #print data_x,data_x.shape,data_x.dtype,type(data_x)
     return data_x
 
-def read_data_to_ndarray(filname="../data/train.csv", limit=None):
+def read_data_to_ndarray(filname="../data/train.csv", limit=None, header_n=1):
 
     print "Reading data %s" % filname
     data = []
@@ -68,12 +68,12 @@ def read_data_to_ndarray(filname="../data/train.csv", limit=None):
     index = 0
     for row in csv_reader:
         index += 1
-        if index == 1:
+        if index <= header_n :
             continue
         labels.append(int(row[0]))
         row = row[1:]
         data.append(np.float32(row)/255)
-        if limit != None and index == limit + 1:
+        if limit != None and index == limit + header_n:
             break
     data_x=np.asarray(data)
     data_y=np.asarray(labels,dtype=np.int32)
