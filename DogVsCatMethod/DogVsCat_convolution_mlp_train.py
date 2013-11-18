@@ -27,11 +27,19 @@ from convolutional_mlp import LeNetConvPoolLayer
 import load_data
 
 DataHome = "../../data/Kaggle/DogVsCatData/"
-train_model_route = DataHome + "DogVsCat_trained_model_lenet.pkl"
+train_dataset_route = DataHome + "DogVsCat_head_train_feature_2500.csv"
+valid_dataset_route = DataHome + "DogVsCat_head_valid_feature_2500.csv"
+train_model_route = DataHome + "DogVsCat_trained_model_lenet_head_feature_2500.pkl"
+train_limit = None
+valid_limit = None
 
-def evaluate_lenet5(learning_rate=0.1, n_epochs=10,
-                    dataset=DataHome,
-                    nkerns=[20, 50], batch_size=5):
+def evaluate_lenet5(learning_rate=0.05, n_epochs=1000,
+                    nkerns=[20, 50], batch_size=50):
+    global train_dataset_route
+    global valid_dataset_route
+    global train_limit
+    global valid_limit
+    print train_dataset_route, type(train_dataset_route)
     """ Demonstrates lenet on MNIST dataset
 
     :type learning_rate: float
@@ -41,16 +49,13 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=10,
     :type n_epochs: int
     :param n_epochs: maximal number of epochs to run the optimizer
 
-    :type dataset: string
-    :param dataset: path to the dataset used for training /testing (MNIST here)
-
     :type nkerns: list of ints
     :param nkerns: number of kernels on each layer
     """
 
     rng = numpy.random.RandomState(23455)
 
-    datasets = load_data.load_data(dataset)
+    datasets = load_data.load_spc_data(train_dataset_route, valid_dataset_route, train_limit, valid_limit)
 
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
@@ -67,7 +72,7 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=10,
     y = T.ivector('y')  # the labels are presented as 1D vector of
                         # [int] labels
 
-    ishape = (28, 28)  # this is the size of MNIST images
+    ishape = (50, 50)  # this is the size of MNIST images
 
     ######################
     # BUILD ACTUAL MODEL #
@@ -76,22 +81,22 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=10,
 
     # Reshape matrix of rasterized images of shape (batch_size,28*28)
     # to a 4D tensor, compatible with our LeNetConvPoolLayer
-    layer0_input = x.reshape((batch_size, 1, 28, 28))
+    layer0_input = x.reshape((batch_size, 1, 50, 50))
 
     # Construct the first convolutional pooling layer:
     # filtering reduces the image size to (28-5+1,28-5+1)=(24,24)
     # maxpooling reduces this further to (24/2,24/2) = (12,12)
     # 4D output tensor is thus of shape (batch_size,nkerns[0],12,12)
     layer0 = LeNetConvPoolLayer(rng, input=layer0_input,
-            image_shape=(batch_size, 1, 28, 28),
-            filter_shape=(nkerns[0], 1, 5, 5), poolsize=(2, 2))
+            image_shape=(batch_size, 1, 50, 50),
+            filter_shape=(nkerns[0], 1, 10, 10), poolsize=(2, 2))
 
     # Construct the second convolutional pooling layer
     # filtering reduces the image size to (12-5+1,12-5+1)=(8,8)
     # maxpooling reduces this further to (8/2,8/2) = (4,4)
     # 4D output tensor is thus of shape (nkerns[0],nkerns[1],4,4)
     layer1 = LeNetConvPoolLayer(rng, input=layer0.output,
-            image_shape=(batch_size, nkerns[0], 12, 12),
+            image_shape=(batch_size, nkerns[0], 20, 20),
             filter_shape=(nkerns[1], nkerns[0], 5, 5), poolsize=(2, 2))
 
     # the TanhLayer being fully-connected, it operates on 2D matrices of
@@ -100,11 +105,11 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=10,
     layer2_input = layer1.output.flatten(2)
 
     # construct a fully-connected sigmoidal layer
-    layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * 4 * 4,
-                         n_out=500, activation=T.tanh)
+    layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * 8 * 8,
+                         n_out=100, activation=T.tanh)
 
     # classify the values of the fully-connected sigmoidal layer
-    layer3 = LogisticRegression(input=layer2.output, n_in=500, n_out=10)
+    layer3 = LogisticRegression(input=layer2.output, n_in=100, n_out=2)
 
     # the cost we minimize during training is the NLL of the model
     cost = layer3.negative_log_likelihood(y)
@@ -152,7 +157,7 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=10,
     ###############
     print '... training'
     # early-stopping parameters
-    patience = 10 # look as this many examples regardless
+    patience = 10000 # look as this many examples regardless
     patience_increase = 2  # wait this much longer when a new best is
                            # found
     improvement_threshold = 0.995  # a relative improvement of this much is
@@ -213,12 +218,17 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=10,
 
             if patience <= iter:
                 done_looping = True
+                print patience , iter
                 break
 
     end_time = time.clock()
     print >> sys.stderr, ('The code for file ' +
                           os.path.split(__file__)[1] +
                           ' ran for %.2fm' % ((end_time - start_time) / 60.))
+    print('Optimization complete.')
+    print('Best validation score of %f %% obtained at iteration %i,'\
+          'with test performance %f %%' %
+          (best_validation_loss * 100., best_iter + 1, test_score * 100.))
 
 if __name__ == '__main__':
     start_sec = time.time()
