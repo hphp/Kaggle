@@ -281,6 +281,7 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
                 break
 
     end_time = time.clock()
+    '''
     print "writing test results"
     test_res = [test_results(i)
         for i in xrange(n_test_batches)]
@@ -298,6 +299,7 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
     print >> sys.stderr, ('The code for file ' +
                           os.path.split(__file__)[1] +
                           ' ran for %.2fm' % ((end_time - start_time) / 60.))
+    '''
 
 if __name__ == '__main__':
     start_sec = time.time()

@@ -25,9 +25,9 @@ def load_data(dataset):
     #the number of rows in the input. It should give the target
     #target to the example with the same index in the input.
     test_set = tdtf.read_test_data_xy_to_ndarray(dataset +
-    "test.csv",limit=28000)
-    valid_set = tdtf.read_data_to_ndarray(dataset + "valid.csv",limit=28000)
-    train_set = tdtf.read_data_to_ndarray(dataset + "train.csv",limit=28000)
+    "test.csv",limit=28)
+    valid_set = tdtf.read_data_to_ndarray(dataset + "valid.csv",limit=280)
+    train_set = tdtf.read_data_to_ndarray(dataset + "train.csv",limit=280)
 
     def shared_dataset(data_xy, borrow=True):
         """ Function that loads the dataset into shared variables
