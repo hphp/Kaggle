@@ -107,7 +107,7 @@ class HiddenLayer(object):
         # parameters of the model
         self.params = [self.W, self.b]
 
-    def __getstate(self):
+    def __getstate__(self):
         return (self.W,self.b)
 
 class MLP(object):

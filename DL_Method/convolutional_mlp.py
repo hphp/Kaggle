@@ -113,7 +113,7 @@ class LeNetConvPoolLayer(object):
         # store parameters of this layer
         self.params = [self.W, self.b]
     
-    def __getstate(self):
+    def __getstate__(self):
         return (self.W,self.b)
 
 def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
