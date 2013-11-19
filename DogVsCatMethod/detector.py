@@ -40,11 +40,12 @@ def detectByMuitScaleSlideWindows(img,windowSize=(15,15),wStep=5,hStep=5,classif
         for x in xRange:
             for y in yRange:
                 cnt+=1
-                #subImg=img[y:y+patchHeight,x:x+patchWidth]
-                #if classifier.isDog(subImg):
-                #print (x,y,patchWidth,patchHeight)
-                positive_rects.append((x,y,patchWidth,patchHeight))
-    logging.info("total:%s",cnt)
+                rect = (x,y,patchWidth,patchHeight)
+                show_rectangle(img,rect)
+                subImg=img[y:y+patchHeight,x:x+patchWidth]
+                if classifier.isDog(subImg):
+                    positive_rects.append(rect)
+    logging.info("total checked:%s",cnt)
     return positive_rects
 
 def detectObject(img):
@@ -55,26 +56,33 @@ def detectObject(img):
     objects=[(20,20,50,10),(30,50,20,40)]
     return objects
 
+def show_rectangle(img, rect):
+    #time.sleep(2)
+    img_for_draw= img.copy()
+    x,y,w,h=rect
+    cv2.rectangle(img_for_draw, (x,y), (x+w,y+h), (255,0,255), 1)
+    #cv2.rectangle(img_for_draw, (x,y), (x+w,y+h), (randint(0,255),0,randint(0,255)), 1)
+    cv2.imshow( "result", img_for_draw)
+    #time.sleep(0.1)
+    cv2.waitKey(1)
+
+
+
 def detect_and_draw( img):
     """
     draw a box with opencv on the image around the detected faces and display the output
     """
     from random import randint 
     start_time = cv2.getTickCount()
-    objects = detectByMuitScaleSlideWindows(img)
+    dog_classifier=DogClassifier()
+    print dog_classifier
+    objects = detectByMuitScaleSlideWindows(img,windowSize=(50,50),classifier=dog_classifier)
     end_time = cv2.getTickCount() 
     logging.info("time cost:%gms",(end_time-start_time)/cv2.getTickFrequency()*1000.)
     #objects = detectObject(img)
-    if objects:
-        for x,y,w,h in objects:
-            #time.sleep(2)
-            img_for_draw= img.copy()
-            cv2.rectangle(img_for_draw, (x,y), (x+w,y+h), (255,0,255), 1)
-            #cv2.rectangle(img_for_draw, (x,y), (x+w,y+h), (randint(0,255),0,randint(0,255)), 1)
-            cv2.imshow( "result", img_for_draw)
-            #time.sleep(0.1)
-            cv2.waitKey(1)
-
+    for rect in objects:
+        show_rectangle(img,rect)
+            
 
 def printDetail(img):
     print dir(img)
@@ -88,17 +96,29 @@ def main():
     if len(sys.argv)!=2:
         print  ''' USAGE: xx.py <image_file_name> '''
         sys.exit(0)
+
     img = cv2.imread(sys.argv[1])
+
     #printDetail(img)
     detect_and_draw(img)
+    #cv2.imshow( "result1", img)
+    #cv2.imshow( "result2", img[100:150,30:230])
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
+class DogClassifier():
+    def __init__(self):
+        pass
+    def isDog(self,img):
+        return (1==image_recognition(img))
+        
+
 if __name__ == '__main__':
-    #main()
+    main()
+    exit(0)
     DataHome = "../../data/Kaggle/DogVsCatData/"
     img_route = DataHome + "head_images/Abyssinian_100.jpg"
-    img = Image.open(img_route)
-
+    img=cv2.imread(img_route)
     img_label = image_recognition(img)
     print "result:", img_label
