@@ -6,6 +6,7 @@ image recognition using lenet
 '''
 
 import cPickle
+import cv2
 import os
 import sys
 import time
@@ -52,20 +53,35 @@ def shared_dataset(data, borrow=True):
     # lets ous get around this issue
     return shared_x
 
-def image_recognition(img_array):
+def image_recognition(img):
     
     """ lenet
-    :type img_array: ndarray
-    :param img_array: img to identify
+    :type img: ndarray
+    :param img: img to identify
 
     :type nkerns: list of ints
     :param nkerns: number of kernels on each layer
     """
 
     start_time = time.clock()
+    #convert to gray.  the result shape is (h,w)
+    img= cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    img_array = numpy.asarray(img_array,dtype='float32') / 255.
-    dataset = [img_array]
+    # to resize 
+    w,h=(50,50)
+    img = cv2.resize(img,(w,h),interpolation=cv2.INTER_LINEAR)
+    #print "after resize and gray:",type(img),img.shape,img.dtype
+
+    #show the gray img
+    #cv2.imshow("w2",img)
+    #cv2.waitKey(0)
+
+    #reshape (h,w) to (h*w,) 
+    img=img.reshape(w*h) 
+    #print "after reshape::",type(img),img.shape,img.dtype
+
+    img = numpy.asarray(img,dtype='float32') / 255.
+    dataset = [img]
     print type(dataset)
     test_set_x = shared_dataset(dataset)
     print type(test_set_x),test_set_x.shape
@@ -149,18 +165,14 @@ def image_recognition(img_array):
 if __name__ == '__main__':
     img_route = DataHome + "head_images/keeshond_149.jpg"
     img_route = DataHome + "head_images/Abyssinian_100.jpg"
-    img = Image.open(img_route)
-    img = img.resize((50, 50), Image.ANTIALIAS)
-    img = numpy.asarray(img, dtype='int32')
-    n_img = []
-    for i in range(img.shape[0]):
-        for j in range(img.shape[1]):
-            cur_v = 0
-            for k in range(img.shape[2]):
-                cur_v += img[i][j][k]
-            cur_v /= 3
-            n_img.append(cur_v)
-    img = numpy.asarray(n_img)
-    print type(img),img.size
+    img = cv2.imread(img_route)
+    print "orignal img: ",type(img),img.shape,img.dtype
+    print img.size
+
+    # show
+    cv2.imshow("w1",img)
+    cv2.waitKey(0)
+
+    # do recognition
     img_label = image_recognition(img)
     print img_label
