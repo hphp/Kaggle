@@ -67,7 +67,7 @@ def evaluate_lenet5(dataset=DataHome, \
     y = T.ivector('y')  # the labels are presented as 1D vector of
                         # [int] labels
 
-    ishape = (28, 28)  # this is the size of MNIST images
+    ishape = (50, 50)  # this is the size of MNIST images
 
     ######################
     # BUILD ACTUAL MODEL #
@@ -76,15 +76,15 @@ def evaluate_lenet5(dataset=DataHome, \
 
     # Reshape matrix of rasterized images of shape (batch_size,28*28)
     # to a 4D tensor, compatible with our LeNetConvPoolLayer
-    layer0_input = x.reshape((batch_size, 1, 28, 28))
+    layer0_input = x.reshape((batch_size, 1, 50, 50))
 
     # Construct the first convolutional pooling layer:
     # filtering reduces the image size to (28-5+1,28-5+1)=(24,24)
     # maxpooling reduces this further to (24/2,24/2) = (12,12)
     # 4D output tensor is thus of shape (batch_size,nkerns[0],12,12)
     layer0 = LeNetConvPoolLayer(rng, input=layer0_input, \
-            image_shape=(batch_size, 1, 28, 28), \
-            filter_shape=(nkerns[0], 1, 5, 5), poolsize=(2, 2), \
+            image_shape=(batch_size, 1, 50, 50), \
+            filter_shape=(nkerns[0], 1, 10, 10), poolsize=(2, 2), \
             W=layer0_state[0], b=layer0_state[1] \
             )
 
@@ -93,7 +93,7 @@ def evaluate_lenet5(dataset=DataHome, \
     # maxpooling reduces this further to (8/2,8/2) = (4,4)
     # 4D output tensor is thus of shape (nkerns[0],nkerns[1],4,4)
     layer1 = LeNetConvPoolLayer(rng, input=layer0.output,
-            image_shape=(batch_size, nkerns[0], 12, 12),
+            image_shape=(batch_size, nkerns[0], 20, 20),
             filter_shape=(nkerns[1], nkerns[0], 5, 5), poolsize=(2, 2), \
             W=layer1_state[0], b=layer1_state[1] \
             )
@@ -104,13 +104,13 @@ def evaluate_lenet5(dataset=DataHome, \
     layer2_input = layer1.output.flatten(2)
 
     # construct a fully-connected sigmoidal layer
-    layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * 4 * 4,
-                         n_out=500, activation=T.tanh,\
+    layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * 8 * 8,
+                         n_out=100, activation=T.tanh,\
                          W=layer2_state[0], b=layer2_state[1] \
                          )
 
     # classify the values of the fully-connected sigmoidal layer
-    layer3 = LogisticRegression(input=layer2.output, n_in=500, n_out=10, \
+    layer3 = LogisticRegression(input=layer2.output, n_in=100, n_out=2, \
                                     W=layer3_state[0], b=layer3_state[1] \
                                 )
 
