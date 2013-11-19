@@ -78,9 +78,8 @@ layer3 = LogisticRegression(input=layer2.output, n_in=100, n_out=2 \
                             )
 
 # definition for theano.function
-dataset = [numpy.zeros(2500, dtype='float32')]
-test_set_x = theano.shared(numpy.asarray(dataset, \
-                                       dtype=theano.config.floatX))
+test_results = theano.function(inputs=[x], \
+    outputs= layer3.y_pred)
 
 def load_trained_model():
     global if_load_trained_model
@@ -91,6 +90,8 @@ def load_trained_model():
     global layer2_input 
     global layer2 
     global layer3 
+    global test_results
+
     if_load_trained_model = 1
     print "loading trained model for the first time"
     trained_model_pkl = open(train_model_route, 'r')
@@ -136,6 +137,8 @@ def load_trained_model():
     layer3 = LogisticRegression(input=layer2.output, n_in=100, n_out=2, \
                                     W=layer3_state[0], b=layer3_state[1] \
                                 )
+    test_results = theano.function(inputs=[x], \
+        outputs= layer3.y_pred)
 
 
 def shared_dataset(data, borrow=True):
@@ -172,6 +175,7 @@ def image_recognition(img):
 
     global if_load_trained_model
     global test_set_x
+    global test_results
 
     if if_load_trained_model == 0:
         load_trained_model()
@@ -195,23 +199,18 @@ def image_recognition(img):
 
     img = numpy.asarray(img,dtype='float32') / 256.
     dataset = [img]
-    print type(dataset)
-    test_set_x = shared_dataset(dataset)
-    print "test_set_x_info: ", type(test_set_x), test_set_x.shape
+    #print type(dataset)
 
+    #print "predicting"
 
-    print "predicting"
-
-    test_results = theano.function(inputs=[index], \
-            outputs= layer3.y_pred, \
-            givens={
-                x: test_set_x[index:index+1]})
-    img_label = test_results(0)
+    img_label = test_results(dataset[0:1])
     
     end_time = time.clock()
+    '''
     print >> sys.stderr, ('The code for file ' +
                           os.path.split(__file__)[1] +
                           ' ran for %d secs' % ((end_time - start_time)))
+    '''
     return img_label[0]
 
 def test_image_recgonition(img_route):
