@@ -3,10 +3,13 @@ import cv2
 import sys
 import logging
 import time
+from PIL import Image
 from numpy import arange
 
 verbosity = logging.INFO
 logging.basicConfig(filename=None,level=verbosity,)
+
+from DogVsCat_lenet_for_detect import image_recognition
 
 
 def detectByMuitScaleSlideWindows(img,windowSize=(15,15),wStep=5,hStep=5,classifier=None):
@@ -92,4 +95,10 @@ def main():
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 if __name__ == '__main__':
-    main()
+    #main()
+    DataHome = "../../data/Kaggle/DogVsCatData/"
+    img_route = DataHome + "head_images/Abyssinian_100.jpg"
+    img = Image.open(img_route)
+
+    img_label = image_recognition(img)
+    print "result:", img_label
