@@ -27,7 +27,8 @@ from mlp import HiddenLayer
 from convolutional_mlp import LeNetConvPoolLayer
 
 DataHome = "../../data/Kaggle/DogVsCatData/"
-train_model_route = DataHome + "DogVsCat_trained_model_lenet_head_feature_2500.pkl"
+ModelHome = "../trained_model/"
+train_model_route = ModelHome + "DogVsCat_trained_model_lenet_head_feature_2500.pkl"
 
 def shared_dataset(data, borrow=True):
     """ Function that loads the dataset into shared variables
