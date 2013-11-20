@@ -11,6 +11,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import csv
 
+def wr_content_to_csv(content_list,filename):
+    csv_writer = csv.writer(open(filename, "w"), delimiter=",")
+    for row in content_list:
+        csv_writer.writerow(row)
+
+def append_content_to_csv(content_list,filename):
+    csv_writer = csv.writer(open(filename, "a"), delimiter=",")
+    for row in content_list:
+        csv_writer.writerow(row)
+
 def write_content_to_csv(content_list,filename):
     csv_writer = csv.writer(open(filename, "a"), delimiter=",")
     for row in content_list:
@@ -119,3 +129,20 @@ def read_csv_data_to_int_list(filname="train.csv", limit=None, header_n = 1):
     data_x=data
     data_y=labels
     return (data_x, data_y)
+
+def read_feature_from_csv(filname="train.csv", limit=None, header_n = 1):
+    # header_n = line numbers of header.
+
+    print "Reading data %s" % filname
+    data = []
+    csv_reader = csv.reader(open(filname, "r"), delimiter=",")
+    index = 0
+    for row in csv_reader:
+        index += 1
+        if (header_n == 1) & (index <= header_n ):
+            continue
+        row = map ( int , (row[0:]))
+        data.append(row)
+        if limit != None and index == limit + header_n:
+            break
+    return data
