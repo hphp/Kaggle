@@ -29,7 +29,7 @@ from convolutional_mlp import LeNetConvPoolLayer
 
 DataHome = "../../data/Kaggle/DogVsCatData/"
 ModelHome = "../trained_model/"
-train_model_route = ModelHome + "DogVsCat_trained_model_lenet_head_feature_3c_2500.pkl"
+train_model_route = ModelHome + "DogVsCat_trained_model_lenet_head_feature_3c_2500_bg.np.pkl"
 
 if_load_trained_model = 0
 
@@ -74,7 +74,7 @@ layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * 8 * 8,
                      )
 
 # classify the values of the fully-connected sigmoidal layer
-layer3 = LogisticRegression(input=layer2.output, n_in=100, n_out=2 \
+layer3 = LogisticRegression(input=layer2.output, n_in=100, n_out=3 \
                             )
 
 # definition for theano.function
@@ -96,7 +96,8 @@ def load_trained_model():
     print "loading trained model for the first time"
     trained_model_pkl = open(train_model_route, 'r')
     trained_model_state_list = cPickle.load(trained_model_pkl)
-    layer0_state, layer1_state, layer2_state, layer3_state = trained_model_state_list 
+    trained_model_state_array = numpy.load(trained_model_pkl)
+    layer0_state, layer1_state, layer2_state, layer3_state = trained_model_state_array
 
     ishape = (50, 50)  # this is the size of MNIST images
 
@@ -134,7 +135,7 @@ def load_trained_model():
                          )
 
     # classify the values of the fully-connected sigmoidal layer
-    layer3 = LogisticRegression(input=layer2.output, n_in=100, n_out=2, \
+    layer3 = LogisticRegression(input=layer2.output, n_in=100, n_out=3, \
                                     W=layer3_state[0], b=layer3_state[1] \
                                 )
     test_results = theano.function(inputs=[x], \
@@ -219,14 +220,16 @@ def test_image_recgonition(img_route):
     print img.size
 
     # show
-    #cv2.imshow("w1",img)
-    #cv2.waitKey(0)
+    cv2.imshow("w1",img)
+    cv2.waitKey(0)
 
     # do recognition
     img_label = image_recognition(img)
     print img_label
 
 if __name__ == '__main__':
+    img_route = DataHome + "train/dog.2.jpg"
+    test_image_recgonition(img_route)
     img_route = DataHome + "head_images/keeshond_149.jpg"
     test_image_recgonition(img_route)
     img_route = DataHome + "head_images/Abyssinian_100.jpg"

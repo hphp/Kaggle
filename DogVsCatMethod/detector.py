@@ -117,6 +117,7 @@ def main():
         sys.exit(0)
 
     img = cv2.imread(sys.argv[1])
+    img=cv2.resize(img,(200,200))
 
     #printDetail(img)
     detect_and_draw(img)

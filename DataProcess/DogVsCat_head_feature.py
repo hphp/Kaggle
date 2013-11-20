@@ -2,6 +2,8 @@
 
 '''
     written by hp_carrot
+    2013-11-20
+    load random pixel value as feature. did not work well
     2013-11-18
     load gray picture , resize to 25*25 , record in csv
     load gray picture , resize to 50*50, record in csv
@@ -31,8 +33,8 @@ def img_label(img_name):
         label = 0
 
     return label
-img_name_list = os.listdir(DataHome + "head_images/")
 features_list = []
+img_name_list = os.listdir(DataHome + "head_images/")
 for img_name in img_name_list:
     #img = Image.open(DataHome + "head_images/" + img_name)
     img = cv2.imread(DataHome + "head_images/" + img_name)
@@ -57,10 +59,34 @@ for img_name in img_name_list:
 
 features_n = len(features_list)
 
-for i in range(features_n):
-    feature = [2]
-    for i in range(2500):
-        feature.append(random.randrange(0,256))
+img_name_list = os.listdir(DataHome + "train/")
+img_num = len(img_name_list)
+img_name_index_list = random.sample(range(img_num), 2*features_n)
+for index in img_name_index_list:
+    #img = Image.open(DataHome + "head_images/" + img_name)
+    img_name = img_name_list[index]
+    img = cv2.imread(DataHome + "train/" + img_name)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    img_h, img_w = img.shape
+    img = img[0: min(50, img_h)]
+    img = numpy.hsplit(img, numpy.array([min(50, img_w)]))[0]
+
+    # to resize 
+    w,h=(50,50)
+    img = cv2.resize(img,(w,h),interpolation=cv2.INTER_LINEAR)
+    #print "after resize and gray:",type(img),img.shape,img.dtype
+
+    #show the gray img
+    #cv2.imshow("w2",img)
+    #cv2.waitKey(0)
+
+    #reshape (h,w) to (h*w,) 
+    img=img.reshape(w*h) 
+    feature= []
+    feature.append(2)
+    for f_v in img:
+        feature.append(f_v)
     features_list.append(feature)
 
 print len(features_list),len(features_list[0]),len(features_list[-1])
