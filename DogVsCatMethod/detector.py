@@ -105,6 +105,7 @@ def main():
         sys.exit(0)
 
     img = cv2.imread(sys.argv[1])
+    img=cv2.resize(img,(200,200))
 
     #printDetail(img)
     detect_and_draw(img)
@@ -116,9 +117,12 @@ def main():
 
 class DogClassifier():
     def __init__(self):
+        self.label_type = [0, 0, 0]
         pass
     def isDog(self,img):
         label=image_recognition(img)
+        self.label_type[label] += 1
+        print self.label_type
         print label
         return (1==label)
         

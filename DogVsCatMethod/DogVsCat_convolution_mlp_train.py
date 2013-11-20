@@ -29,7 +29,7 @@ import load_data
 DataHome = "../../data/Kaggle/DogVsCatData/"
 train_dataset_route = DataHome + "DogVsCat_head_train_feature_3c_2500.csv"
 valid_dataset_route = DataHome + "DogVsCat_head_valid_feature_3c_2500.csv"
-train_model_route = DataHome + "DogVsCat_trained_model_lenet_head_feature_3c_2500.pkl"
+train_model_route = DataHome + "DogVsCat_trained_model_lenet_head_feature_3c_2500_bg.np.pkl"
 train_limit = None
 valid_limit = None
 
@@ -213,8 +213,11 @@ def evaluate_lenet5(learning_rate=0.05, n_epochs=1000,
                     layer2_state = layer2.__getstate__()
                     layer3_state = layer3.__getstate__()
                     trained_model_list = [layer0_state, layer1_state, layer2_state, layer3_state]
+                    trained_model_array = numpy.asarray(trained_model_list)
                     classifier_file = open(train_model_route, 'w')
-                    cPickle.dump(trained_model_list, classifier_file)
+                    cPickle.dump([1,2,3], classifier_file, protocol=2)
+                    numpy.save(classifier_file, trained_model_array)
+                    classifier_file.close()
 
             if patience <= iter:
                 done_looping = True
