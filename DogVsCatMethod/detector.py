@@ -13,7 +13,8 @@ from DogVsCat_lenet_for_detect import image_recognition
 
 
 def detectByMuitScaleSlideWindows(img,windowSize=(15,15),wStep=5,hStep=5,classifier=None):
-    positive_rects=[]
+    dog_rects=[]
+    cat_rects=[]
     imgHeight=img.shape[0]
     imgWidth=img.shape[1]
     logging.info("img size. width:%s,height:%s",imgWidth,imgHeight)
@@ -43,11 +44,17 @@ def detectByMuitScaleSlideWindows(img,windowSize=(15,15),wStep=5,hStep=5,classif
                 rect = (x,y,patchWidth,patchHeight)
                 show_rectangle(img,rect)
                 subImg=img[y:y+patchHeight,x:x+patchWidth]
-                if classifier.isDog(subImg):
+                #if classifier.isDog(subImg):
+                the_label=classifier.Recognize(subImg)
+                if the_label==DogClassifier.Dog:
                     print "found one dog:",rect
-                    positive_rects.append(rect)
+                    dog_rects.append(rect)
+                elif the_label==DogClassifier.Cat:
+                    print "found one cat:",rect
+                    cat_rects.append(rect)
+                    
     logging.info("total checked:%s",cnt)
-    return positive_rects
+    return (dog_rects,cat_rects)
 
 def detectObject(img):
     """
@@ -77,16 +84,21 @@ def detect_and_draw( img):
     start_time = cv2.getTickCount()
     dog_classifier=DogClassifier()
     print dog_classifier
-    objects = detectByMuitScaleSlideWindows(img,windowSize=(50,50),classifier=dog_classifier)
+    dogs,cats = detectByMuitScaleSlideWindows(img,windowSize=(50,50),classifier=dog_classifier)
     end_time = cv2.getTickCount() 
     logging.info("time cost:%gms",(end_time-start_time)/cv2.getTickFrequency()*1000.)
-    #objects = detectObject(img)
-    print "found total:",len(objects)
-    for rect in objects:
+    #dogs = detectObject(img)
+    print "found dogs:",len(dogs)
+    for rect in dogs:
+        x,y,w,h=rect
+        cv2.rectangle(img, (x,y), (x+w,y+h), (255,0,255), 1)
+
+    print "found cats:",len(cats)
+    for rect in cats:
         x,y,w,h=rect
         cv2.rectangle(img, (x,y), (x+w,y+h), (0,0,255), 1)
     cv2.imshow("result", img)
-    cv2.waitKey(1)
+    cv2.waitKey(-1)
 
 
             
@@ -114,13 +126,26 @@ def main():
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+
 class DogClassifier():
+    Dog=1
+    Cat=0
+    Other=2 
     def __init__(self):
+        self.label_type = [0, 0, 0]
         pass
+
     def isDog(self,img):
         label=image_recognition(img)
+        self.label_type[label] += 1
+        print self.label_type
         print label
         return (1==label)
+    
+    def Recognize(self,img):
+        label=image_recognition(img)
+        return label
+        
         
 
 if __name__ == '__main__':
