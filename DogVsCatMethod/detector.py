@@ -44,6 +44,7 @@ def detectByMuitScaleSlideWindows(img,windowSize=(15,15),wStep=5,hStep=5,classif
                 show_rectangle(img,rect)
                 subImg=img[y:y+patchHeight,x:x+patchWidth]
                 if classifier.isDog(subImg):
+                    print "found one dog:",rect
                     positive_rects.append(rect)
     logging.info("total checked:%s",cnt)
     return positive_rects
@@ -56,11 +57,11 @@ def detectObject(img):
     objects=[(20,20,50,10),(30,50,20,40)]
     return objects
 
-def show_rectangle(img, rect):
+def show_rectangle(img, rect,color=(255,0,255)):
     #time.sleep(2)
     img_for_draw= img.copy()
     x,y,w,h=rect
-    cv2.rectangle(img_for_draw, (x,y), (x+w,y+h), (255,0,255), 1)
+    cv2.rectangle(img_for_draw, (x,y), (x+w,y+h), color, 1)
     #cv2.rectangle(img_for_draw, (x,y), (x+w,y+h), (randint(0,255),0,randint(0,255)), 1)
     cv2.imshow( "result", img_for_draw)
     #time.sleep(0.1)
@@ -80,8 +81,14 @@ def detect_and_draw( img):
     end_time = cv2.getTickCount() 
     logging.info("time cost:%gms",(end_time-start_time)/cv2.getTickFrequency()*1000.)
     #objects = detectObject(img)
+    print "found total:",len(objects)
     for rect in objects:
-        show_rectangle(img,rect)
+        x,y,w,h=rect
+        cv2.rectangle(img, (x,y), (x+w,y+h), (0,0,255), 1)
+    cv2.imshow("result", img)
+    cv2.waitKey(1)
+
+
             
 
 def printDetail(img):
@@ -111,7 +118,9 @@ class DogClassifier():
     def __init__(self):
         pass
     def isDog(self,img):
-        return (1==image_recognition(img))
+        label=image_recognition(img)
+        print label
+        return (1==label)
         
 
 if __name__ == '__main__':
