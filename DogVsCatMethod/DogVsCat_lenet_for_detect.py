@@ -29,7 +29,7 @@ from convolutional_mlp import LeNetConvPoolLayer
 
 DataHome = "../../data/Kaggle/DogVsCatData/"
 ModelHome = "../trained_model/"
-train_model_route = ModelHome + "DogVsCat_trained_model_lenet_head_feature_2500.pkl"
+train_model_route = ModelHome + "DogVsCat_trained_model_lenet_head_feature_3c_2500.pkl"
 
 if_load_trained_model = 0
 
