@@ -1,4 +1,8 @@
 
+====setup===
+1. add Kaggle paht to PYTHONPATH
+
+
 ============= directory tree ======
 ../data 
     Kaggle
