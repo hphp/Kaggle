@@ -14,6 +14,7 @@
         MNISTData
             train.csv -- train data from Kaggle
             test.csv -- test data from Kaggle
+            valid.csv -- valid data from Kaggle
 
             METHOD*_trained_model.pkl -- trained model using METHOD*
             pringle_METHOD*.csv     -- Kaggle submission data using METHOD*
