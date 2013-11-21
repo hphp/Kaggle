@@ -42,8 +42,6 @@ class CaptureManager(object):
         if self._video_source!=0 and pos<=0.0:   
             print 'reach the end of file.'
             return None
-        if self._video_source!=0:   
-            time.sleep(1)
         if self._enteredFrame and self._frame is None:
             _, self._frame = self._capture.retrieve(channel = self.channel)
         return self._frame
@@ -171,8 +169,8 @@ class WindowManager(object):
         cv2.destroyWindow(self._windowName)
         self._isWindowCreated = False
     
-    def processEvents(self):
-        keycode = cv2.waitKey(1)
+    def processEvents(self,wait_time=1):
+        keycode = cv2.waitKey(wait_time)
         if self.keypressCallback is not None and keycode != -1:
             # Discard any non-ASCII info encoded by GTK.
             keycode &= 0xFF

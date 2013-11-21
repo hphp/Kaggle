@@ -1,4 +1,5 @@
 import cv2
+import sys
 import filters
 from managers import WindowManager, CaptureManager
 import rects
@@ -38,7 +39,10 @@ class Browser(object):
                 cv2.waitKey(0)
                 break
             self._captureManager.exitFrame()
-            self._windowManager.processEvents()
+            waitkey_time=1
+            if self._captureManager._video_source!=0:   
+                waitkey_time=500
+            self._windowManager.processEvents(waitkey_time)
     
     def onKeypress(self, keycode):
         """Handle a keypress.
@@ -65,12 +69,22 @@ class Browser(object):
 
 
 if __name__=="__main__":
-    # do the video file 
-    filename='/Users/xcbfreedom/Documents/video.avi'
-    #filename='/Users/xcbfreedom/Documents/screencast.avi'
-    #browser = Browser(filename)
-    
-    # do the camero
-    browser = Browser(0)
+    if len(sys.argv)!=2:
+        print   ''' USAGE: %s [<image_file_name> | camera]''' % sys.argv[0]
+        print   '''x-- do detect;'''
+        print   '''tab---generate a video;'''
+        print   '''space--take a screenshot;'''
+        print   '''escape--exit;'''
+        sys.exit(0)
+
+    if sys.argv[1]=='camera':
+        # do the camera
+        browser = Browser(0)
+    else:
+        # do the video file 
+        #filename='/Users/xcbfreedom/Documents/video.avi'
+        #filename='/Users/xcbfreedom/Documents/screencast.avi'
+        filename=sys.argv[1]
+        browser = Browser(filename)
 
     browser.run() # 
