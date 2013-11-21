@@ -1,5 +1,6 @@
 
-data directory tree
+============= directory tree ======
+../data 
     Kaggle
         DogVsCat
             head_images/ -- head jpg files
@@ -10,10 +11,10 @@ data directory tree
             *_feature_*.csv -- feature csv file
             *_trained_model_*.pkl -- trained model
         MNIST
+            
+            
+./reports  -- some test report or plot results 
 
-reports  -- some test report or plot results 
+./plot  ---  some tools for data plot
 
-plot  ---  some tools for data plot
-
-TODO:
-del data dir from the  
+==========================================
