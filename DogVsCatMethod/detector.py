@@ -89,14 +89,23 @@ def detect_and_draw( img):
     logging.info("time cost:%gms",(end_time-start_time)/cv2.getTickFrequency()*1000.)
     #dogs = detectObject(img)
     print "found dogs:",len(dogs)
+    max_rect=(0,0,0,0)
     for rect in dogs:
         x,y,w,h=rect
-        cv2.rectangle(img, (x,y), (x+w,y+h), (255,0,255), 1)
+        if w*h>max_rect[2]*max_rect[3]:
+            max_rect=rect
+    x,y,w,h=max_rect
+    cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,255), 1)
 
     print "found cats:",len(cats)
+    max_rect=(0,0,0,0)
     for rect in cats:
         x,y,w,h=rect
-        cv2.rectangle(img, (x,y), (x+w,y+h), (0,0,255), 1)
+        if w*h>max_rect[2]*max_rect[3]:
+            max_rect=rect
+    x,y,w,h=max_rect
+    cv2.rectangle(img, (x,y), (x+w,y+h), (255,0,0), 1)
+
     cv2.imshow("result", img)
     cv2.waitKey(-1)
 
@@ -117,7 +126,7 @@ def main():
         sys.exit(0)
 
     img = cv2.imread(sys.argv[1])
-    img=cv2.resize(img,(200,200))
+    img=cv2.resize(img,(100,100))
 
     #printDetail(img)
     detect_and_draw(img)
