@@ -26,6 +26,14 @@ def write_content_to_csv(content_list,filename):
     for row in content_list:
         csv_writer.writerow(row)
 
+def wr_to_csv(header, id_list, pred_list, filename):
+    csv_writer = csv.writer(open(filename, "wb"), delimiter=",")
+    csv_writer.writerow(header)
+    index=0
+    for row in pred_list:
+        csv_writer.writerow([id_list[index],row])
+        index+=1
+
 def write_to_csv(pred_list,filename):
     csv_writer = csv.writer(open(filename, "wb"), delimiter=",")
     csv_writer.writerow(['ImageId','Label'])
