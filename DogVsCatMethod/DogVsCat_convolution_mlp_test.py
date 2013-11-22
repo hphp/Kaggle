@@ -1,6 +1,8 @@
 #!/usr/bin/python
 '''
 written by hp_carrot
+2013-11-22
+
 2013-11-18
 test with trained model
 lenet
@@ -26,10 +28,16 @@ from logistic_sgd import LogisticRegression
 from mlp import HiddenLayer
 from convolutional_mlp import LeNetConvPoolLayer
 import load_data
+if not "../DataProcess/" in sys.path:
+    sys.path.append("../DataProcess/")
+import transform_data_to_format as tdtf
 
-DataHome = "../../data/Kaggle/MNISTData/"
+DataHome = "../../data/Kaggle/DogVsCatData/"
+ModelHome = "../trained_model/"
+train_model_route = ModelHome + "DogVsCat_trained_model_lenet_2500_feature.np.pkl"
+test_label_route = DataHome + "DogVsCat_lenet_2500f.csv"
 
-def evaluate_lenet5(dataset=DataHome, \
+def evaluate_lenet5(dataset_route=DataHome+"DogVsCat_test_feature_2500.csv", \
                     nkerns=[20, 50], batch_size=5):
     """ Demonstrates lenet on MNIST dataset
 
@@ -49,13 +57,16 @@ def evaluate_lenet5(dataset=DataHome, \
 
     rng = numpy.random.RandomState(23455)
 
-    trained_model_pkl = open("tmp.file", 'r')
+    trained_model_pkl = open(ModelHome + train_model_route, 'r')
     trained_model_state_list = cPickle.load(trained_model_pkl)
-    layer0_state, layer1_state, layer2_state, layer3_state = trained_model_state_list 
+    trained_model_state_array = numpy.load(trained_model_pkl)
+    layer0_state, layer1_state, layer2_state, layer3_state = trained_model_state_array
 
-    datasets = load_data.load_test_data(dataset)
-
-    test_set_x, test_set_y = datasets[0]
+    test_set = tdtf.read_data_to_ndarray(dataset_route, limit=None, header_n=0)
+    test_set_x, id_arr = test_set
+    datasets = load_data.shared_dataset(test_set)
+    test_set_x, test_set_y = datasets
+    print test_set_x.shape, test_set_y.shape
 
     # compute number of minibatches for training, validation and testing
     n_test_batches = test_set_x.get_value(borrow=True).shape[0]
@@ -126,7 +137,16 @@ def evaluate_lenet5(dataset=DataHome, \
     test_res = [test_results(i)
         for i in xrange(n_test_batches)]
     print test_res
-    
+   
+    id_l = []
+    label_l = []
+    index = 0
+    for arr in test_res:
+        for label in arr:
+            label_l.append(label)
+            id_l.append(id_arr[index])
+            index += 1
+    tdtf.wr_to_csv(header=['id','label'], id_list=id_l, pred_list=label_l, filename=test_label_route)
     end_time = time.clock()
     print >> sys.stderr, ('The code for file ' +
                           os.path.split(__file__)[1] +
