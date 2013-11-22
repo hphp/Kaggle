@@ -40,5 +40,7 @@ for img_name in img_name_list:
         feature.append(f_v)
     features_list.append(feature)
 
+features_list.sort()
 print len(features_list),len(features_list[0]),len(features_list[-1])
+print features_list[0][0], features_list[-1][0]
 tdtf.wr_content_to_csv(features_list,test_feature_filename)
