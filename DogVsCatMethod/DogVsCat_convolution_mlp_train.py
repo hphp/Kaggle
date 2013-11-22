@@ -27,9 +27,9 @@ from convolutional_mlp import LeNetConvPoolLayer
 import load_data
 
 DataHome = "../../data/Kaggle/DogVsCatData/"
-train_dataset_route = DataHome + "DogVsCat_head_train_feature_3c_2500.csv"
-valid_dataset_route = DataHome + "DogVsCat_head_valid_feature_3c_2500.csv"
-train_model_route = DataHome + "DogVsCat_trained_model_lenet_head_feature_3c_2500_bg.np.pkl"
+train_dataset_route = DataHome + "DogVsCat_train_feature_2500.csv"
+valid_dataset_route = DataHome + "DogVsCat_valid_feature_2500.csv"
+train_model_route = DataHome + "DogVsCat_trained_model_lenet_2500_feature.np.pkl"
 train_limit = None
 valid_limit = None
 
@@ -109,7 +109,7 @@ def evaluate_lenet5(learning_rate=0.05, n_epochs=1000,
                          n_out=100, activation=T.tanh)
 
     # classify the values of the fully-connected sigmoidal layer
-    layer3 = LogisticRegression(input=layer2.output, n_in=100, n_out=3)
+    layer3 = LogisticRegression(input=layer2.output, n_in=100, n_out=2)
 
     # the cost we minimize during training is the NLL of the model
     cost = layer3.negative_log_likelihood(y)
