@@ -10,7 +10,7 @@ from data_browsers import browse_images
 verbosity = logging.INFO
 logging.basicConfig(filename=None,level=verbosity,)
 
-from DogVsCat_lenet_for_detect import image_recognition
+#from DogVsCat_lenet_for_detect import image_recognition
 
 wind_name="detecting"
 cv2.namedWindow(wind_name)
@@ -79,6 +79,23 @@ def show_rectangle(img, rect,color=(255,0,255)):
     if 27==cv2.waitKey(1):
         sys.exit(0)    
 
+
+def isGray(image):
+    """Return True if the image has one channel per pixel."""
+    return image.ndim < 3
+
+
+def detect_dogs(image):
+    if not isGray(image):
+        image = cv2.cvtColor(image, cv2.cv.CV_BGR2GRAY)
+    image = cv2.equalizeHist(image)
+    classifier = cv2.CascadeClassifier( '/Users/xcbfreedom/projects/data/Kaggle/DogVsCatData/Haar_data/cascade.xml')
+
+    dog_rects = classifier.detectMultiScale( image, 1.2, 3, 0, (50,50))
+    for item in dog_rects:
+        x, y, w, h = item 
+        cv2.rectangle(image, (x,y), (x+w,y+h), (255,0,0), 1)
+    return image
 
 
 def detect_and_draw( img):
@@ -151,7 +168,9 @@ if __name__ == '__main__':
     dir_path=sys.argv[1]
     #dir_path='/Users/xcbfreedom/projects/data/dogs_vs_cats'
     if sys.argv[2]=="simple":
-        browse_images.simple_browse(dir_path,img_handle=detect_and_draw)
+        #browse_images.simple_browse(dir_path,img_handle=detect_and_draw)
+        browse_images.simple_browse(dir_path,img_handle=detect_dogs)
     elif sys.argv[2]=="random":
-        browse_images.random_browse(dir_path)
+        #browse_images.random_browse(dir_path)
+        browse_images.random_browse(dir_path,img_handle=detect_dogs)
     #(img)
