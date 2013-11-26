@@ -17,6 +17,7 @@
     load gray picture , resize to 50*50, record in csv
 '''
 import os
+import sys
 import random
 import cv2
 import transform_data_to_format as tdtf
@@ -49,9 +50,25 @@ def img_label(img_name):
 
     return label
 
+if len(sys.argv) > 1:
+    DataHome = sys.argv[1]
+if len(sys.argv) > 2:
+    src_img_route = sys.argv[2]
+
 features_list = []
 img_name_list = os.listdir(DataHome + src_img_route)
-for img_name in img_name_list:
+start_index = 0
+end_index = len(img_name_list)
+if len(sys.argv) > 4:
+    train_feature_filename = sys.argv[3]
+    valid_feature_filename = sys.argv[4]
+if len(sys.argv) > 6:
+    start_index = int(sys.argv[5])
+    end_index = int(sys.argv[6])
+end_index = min(end_index, len(img_name_list))
+
+for index in range(start_index, end_index):
+    img_name = img_name_list[index]
     img = cv2.imread(DataHome + src_img_route + img_name)
     if (len(img.shape) > 2) & (img.shape[2] == 3):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -74,7 +91,6 @@ for img_name in img_name_list:
     features_list.append(feature)
 
 print len(features_list),len(features_list[0]),len(features_list[-1])
-'''
 train_index_list = random.sample(range(len(features_list)), len(features_list)/2 )
 train_features_list = []
 for i in train_index_list:
@@ -88,6 +104,5 @@ for i in range(len(features_list)):
 print len(train_features_list)
 print len(valid_features_list)
 # write / cover content to file
-tdtf.wr_content_to_csv(train_features_list,train_feature_filename)
-tdtf.wr_content_to_csv(valid_features_list,valid_feature_filename)
-'''
+tdtf.append_content_to_csv(train_features_list,train_feature_filename)
+tdtf.append_content_to_csv(valid_features_list,valid_feature_filename)
