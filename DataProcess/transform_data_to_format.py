@@ -77,6 +77,28 @@ def read_test_data_to_ndarray(filname="../data/test.csv", limit=None):
     #print data_x,data_x.shape,data_x.dtype,type(data_x)
     return data_x
 
+def read_data_patch_to_ndarray(filname="../data/train.csv", start_line=0, limit=None):
+
+    print "Reading data %s of lines %s , starting from %d " % (filname, str(limit), start_line)
+    data = []
+    labels = []
+    csv_reader = csv.reader(open(filname, "r"), delimiter=",")
+    index = -1
+    for row in csv_reader:
+        index += 1
+        if index < start_line:
+            continue
+        if limit != None:
+            if index >= start_line + limit:
+                break
+        labels.append(int(row[0]))
+        row = row[1:]
+        data.append(np.float32(row)/255)
+
+    data_x=np.asarray(data)
+    data_y=np.asarray(labels,dtype=np.int32)
+    return (data_x, data_y)
+
 def read_data_to_ndarray(filname="../data/train.csv", limit=None, header_n=1):
 
     print "Reading data %s" % filname
