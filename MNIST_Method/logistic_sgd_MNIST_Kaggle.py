@@ -50,6 +50,8 @@ import theano
 theano.config.floatX='float32'
 import theano.tensor as T
 
+DataHome = "/home/hphp/Documents/data/Kaggle/MNISTData/"
+
 def write_to_csv(pred_list,filename):
     csv_writer = csv.writer(open(filename, "wb"), delimiter=",")
     csv_writer.writerow(['ImageId,Label'])
@@ -220,9 +222,9 @@ def load_data(dataset):
     #numpy.ndarray of 1 dimensions (vector)) that have the same length as
     #the number of rows in the input. It should give the target
     #target to the example with the same index in the input.
-    test_set = read_test_data_to_ndarray("../data/test.csv",limit=28000)
-    valid_set = read_data_to_ndarray("../data/valid.csv",limit=21000)
-    train_set = read_data_to_ndarray("../data/train.csv",limit=21000)
+    test_set = read_test_data_to_ndarray(DataHome+"test.csv", limit=2800)
+    valid_set = read_data_to_ndarray(DataHome+"valid.csv", limit=2100)
+    train_set = read_data_to_ndarray(DataHome+"train.csv", limit=2100)
 
     def shared_dataset(data_xy, borrow=True):
         """ Function that loads the dataset into shared variables
@@ -258,7 +260,7 @@ def load_data(dataset):
     return rval
 
 
-def sgd_optimization_mnist(learning_rate=0.13, n_epochs=10000,
+def sgd_optimization_mnist(learning_rate=0.39, n_epochs=10000,
                            dataset='../data/mnist.pkl.gz',
                            batch_size=700):
     """
@@ -320,8 +322,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=10000,
     test_results = theano.function(inputs=[index],
             outputs= classifier.y_pred,
             givens={
-                x: test_set_x[index * batch_size: (index + 1) * batch_size],
-                y: test_set_y[index * batch_size: (index + 1) * batch_size]})
+                x: test_set_x[index * batch_size: (index + 1) * batch_size]})
 
     validate_model = theano.function(inputs=[index],
             outputs=classifier.errors(y),
@@ -342,7 +343,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=10000,
     # the same time updates the parameter of the model based on the rules
     # defined in `updates`
     train_model = theano.function(inputs=[index],
-            outputs=cost,
+            outputs=[cost, classifier.errors(y)],
             updates=updates,
             givens={
                 x: train_set_x[index * batch_size:(index + 1) * batch_size],
@@ -375,7 +376,10 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=10000,
         epoch = epoch + 1
         for minibatch_index in xrange(n_train_batches):
 
-            minibatch_avg_cost = train_model(minibatch_index)
+            minibatch_avg_cost, train_err_rate = train_model(minibatch_index)
+            print('epoch %i, minibatch %i/%i, train avr_cost %f, err_rate %f %%' % \
+                (epoch, minibatch_index + 1, n_train_batches,
+                minibatch_avg_cost, train_err_rate*100.))
             # iteration number
             iter = (epoch - 1) * n_train_batches + minibatch_index
 
@@ -385,11 +389,9 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=10000,
                                      for i in xrange(n_valid_batches)]
                 this_validation_loss = numpy.mean(validation_losses)
 
-                '''
                 print('epoch %i, minibatch %i/%i, validation error %f %%' % \
                     (epoch, minibatch_index + 1, n_train_batches,
                     this_validation_loss * 100.))
-                '''
 
                 # if we got the best validation score until now
                 if this_validation_loss < best_validation_loss:
@@ -400,12 +402,14 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=10000,
 
                     best_validation_loss = this_validation_loss
                     # test it on the test set
+                    '''
 
                     test_losses = [test_model(i)
                                    for i in xrange(n_test_batches)]
                     test_score = numpy.mean(test_losses)
                     test_res = [test_results(i)
                                    for i in xrange(n_test_batches)]
+                    '''
 
                     '''
                     print(('     epoch %i, minibatch %i/%i, test error of best'
@@ -419,7 +423,6 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=10000,
                 break
 
     end_time = time.clock()
-    '''
     print(('Optimization complete with best validation score of %f %%,'
            'with test performance %f %%') %
                  (best_validation_loss * 100., test_score * 100.))
@@ -441,6 +444,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=10000,
 
     #print a
     write_to_csv(a,'../data/pringle_2.csv')
+    '''
 
 if __name__ == '__main__':
     sgd_optimization_mnist()
