@@ -1,0 +1,210 @@
+... building the model
+... training
+training @ iter =  0  patience =  100
+epoch 1, minibatch 1/5, train cost 0.69 , error rate 0.55 %
+epoch 1, minibatch 2/5, train cost 0.80 , error rate 0.55 %
+decreasing
+epoch 1, minibatch 3/5, train cost 1.05 , error rate 0.55 %
+decreasing
+epoch 1, minibatch 4/5, train cost 1.99 , error rate 0.60 %
+decreasing
+epoch 1, minibatch 5/5, train cost 44.68 , error rate 0.60 %
+decreasing
+epoch 2, minibatch 1/5, train cost 8.08 , error rate 0.45 %
+decreasing
+epoch 2, minibatch 2/5, train cost 23.82 , error rate 0.45 %
+decreasing
+epoch 2, minibatch 3/5, train cost 8.06 , error rate 0.45 %
+decreasing
+epoch 2, minibatch 4/5, train cost 20.94 , error rate 0.40 %
+decreasing
+epoch 2, minibatch 5/5, train cost 4.10 , error rate 0.40 %
+decreasing
+epoch 3, minibatch 1/5, train cost 28.48 , error rate 0.55 %
+decreasing
+epoch 3, minibatch 2/5, train cost 18.83 , error rate 0.55 %
+decreasing
+epoch 3, minibatch 3/5, train cost 28.40 , error rate 0.55 %
+decreasing
+epoch 3, minibatch 4/5, train cost 19.82 , error rate 0.60 %
+decreasing
+epoch 3, minibatch 5/5, train cost 35.60 , error rate 0.60 %
+decreasing
+epoch 4, minibatch 1/5, train cost 2.42 , error rate 0.45 %
+decreasing
+epoch 4, minibatch 2/5, train cost 29.82 , error rate 0.45 %
+decreasing
+epoch 4, minibatch 3/5, train cost 2.20 , error rate 0.45 %
+decreasing
+epoch 4, minibatch 4/5, train cost 26.37 , error rate 0.40 %
+decreasing
+epoch 4, minibatch 5/5, train cost 2.00 , error rate 0.60 %
+decreasing
+epoch 5, minibatch 1/5, train cost 38.47 , error rate 0.45 %
+decreasing
+epoch 5, minibatch 2/5, train cost 8.03 , error rate 0.55 %
+decreasing
+epoch 5, minibatch 3/5, train cost 39.63 , error rate 0.55 %
+decreasing
+epoch 5, minibatch 4/5, train cost 8.75 , error rate 0.60 %
+decreasing
+epoch 5, minibatch 5/5, train cost 47.08 , error rate 0.60 %
+decreasing
+epoch 6, minibatch 1/5, train cost 7.23 , error rate 0.45 %
+decreasing
+epoch 6, minibatch 2/5, train cost 24.68 , error rate 0.45 %
+decreasing
+epoch 6, minibatch 3/5, train cost 7.23 , error rate 0.45 %
+decreasing
+epoch 6, minibatch 4/5, train cost 21.67 , error rate 0.40 %
+decreasing
+epoch 6, minibatch 5/5, train cost 3.54 , error rate 0.40 %
+decreasing
+epoch 7, minibatch 1/5, train cost 29.78 , error rate 0.55 %
+decreasing
+epoch 7, minibatch 2/5, train cost 17.88 , error rate 0.55 %
+decreasing
+epoch 7, minibatch 3/5, train cost 29.78 , error rate 0.55 %
+decreasing
+epoch 7, minibatch 4/5, train cost 19.50 , error rate 0.60 %
+decreasing
+epoch 7, minibatch 5/5, train cost 37.22 , error rate 0.60 %
+decreasing
+epoch 8, minibatch 1/5, train cost 14.63 , error rate 0.45 %
+decreasing
+epoch 8, minibatch 2/5, train cost 17.27 , error rate 0.45 %
+decreasing
+epoch 8, minibatch 3/5, train cost 14.57 , error rate 0.45 %
+decreasing
+epoch 8, minibatch 4/5, train cost 15.41 , error rate 0.40 %
+decreasing
+epoch 8, minibatch 5/5, train cost 9.80 , error rate 0.40 %
+decreasing
+epoch 9, minibatch 1/5, train cost 21.19 , error rate 0.55 %
+decreasing
+epoch 9, minibatch 2/5, train cost 26.47 , error rate 0.55 %
+decreasing
+epoch 9, minibatch 3/5, train cost 21.19 , error rate 0.55 %
+decreasing
+epoch 9, minibatch 4/5, train cost 28.88 , error rate 0.60 %
+decreasing
+epoch 9, minibatch 5/5, train cost 27.84 , error rate 0.60 %
+decreasing
+epoch 10, minibatch 1/5, train cost 21.66 , error rate 0.45 %
+decreasing
+epoch 10, minibatch 2/5, train cost 10.25 , error rate 0.45 %
+decreasing
+epoch 10, minibatch 3/5, train cost 21.66 , error rate 0.45 %
+decreasing
+epoch 10, minibatch 4/5, train cost 9.11 , error rate 0.40 %
+decreasing
+epoch 10, minibatch 5/5, train cost 16.10 , error rate 0.40 %
+decreasing
+epoch 11, minibatch 1/5, train cost 12.53 , error rate 0.55 %
+decreasing
+epoch 11, minibatch 2/5, train cost 35.14 , error rate 0.55 %
+decreasing
+epoch 11, minibatch 3/5, train cost 12.53 , error rate 0.55 %
+decreasing
+epoch 11, minibatch 4/5, train cost 38.33 , error rate 0.60 %
+decreasing
+epoch 11, minibatch 5/5, train cost 18.39 , error rate 0.60 %
+decreasing
+epoch 12, minibatch 1/5, train cost 28.75 , error rate 0.45 %
+decreasing
+epoch 12, minibatch 2/5, train cost 3.16 , error rate 0.45 %
+decreasing
+epoch 12, minibatch 3/5, train cost 28.68 , error rate 0.45 %
+decreasing
+epoch 12, minibatch 4/5, train cost 2.86 , error rate 0.40 %
+decreasing
+epoch 12, minibatch 5/5, train cost 22.30 , error rate 0.40 %
+decreasing
+epoch 13, minibatch 1/5, train cost 4.01 , error rate 0.55 %
+decreasing
+epoch 13, minibatch 2/5, train cost 43.60 , error rate 0.55 %
+decreasing
+epoch 13, minibatch 3/5, train cost 4.06 , error rate 0.55 %
+decreasing
+epoch 13, minibatch 4/5, train cost 47.50 , error rate 0.60 %
+decreasing
+epoch 13, minibatch 5/5, train cost 9.22 , error rate 0.60 %
+decreasing
+epoch 14, minibatch 1/5, train cost 35.63 , error rate 0.45 %
+decreasing
+epoch 14, minibatch 2/5, train cost 4.55 , error rate 0.55 %
+decreasing
+epoch 14, minibatch 3/5, train cost 43.09 , error rate 0.55 %
+decreasing
+epoch 14, minibatch 4/5, train cost 4.99 , error rate 0.60 %
+decreasing
+epoch 14, minibatch 5/5, train cost 51.71 , error rate 0.60 %
+decreasing
+epoch 15, minibatch 1/5, train cost 3.76 , error rate 0.45 %
+decreasing
+epoch 15, minibatch 2/5, train cost 28.13 , error rate 0.45 %
+decreasing
+epoch 15, minibatch 3/5, train cost 3.77 , error rate 0.45 %
+decreasing
+epoch 15, minibatch 4/5, train cost 24.99 , error rate 0.40 %
+decreasing
+epoch 15, minibatch 5/5, train cost 0.68 , error rate 0.40 %
+epoch 16, minibatch 1/5, train cost 2.54 , error rate 0.55 %
+decreasing
+epoch 16, minibatch 2/5, train cost 44.27 , error rate 0.55 %
+decreasing
+epoch 16, minibatch 3/5, train cost 3.39 , error rate 0.55 %
+decreasing
+epoch 16, minibatch 4/5, train cost 48.10 , error rate 0.60 %
+decreasing
+epoch 16, minibatch 5/5, train cost 8.62 , error rate 0.60 %
+decreasing
+epoch 17, minibatch 1/5, train cost 36.07 , error rate 0.45 %
+decreasing
+epoch 17, minibatch 2/5, train cost 5.09 , error rate 0.55 %
+decreasing
+epoch 17, minibatch 3/5, train cost 42.56 , error rate 0.55 %
+decreasing
+epoch 17, minibatch 4/5, train cost 5.56 , error rate 0.60 %
+decreasing
+epoch 17, minibatch 5/5, train cost 51.15 , error rate 0.60 %
+decreasing
+epoch 18, minibatch 1/5, train cost 4.18 , error rate 0.45 %
+decreasing
+epoch 18, minibatch 2/5, train cost 27.72 , error rate 0.45 %
+decreasing
+epoch 18, minibatch 3/5, train cost 4.19 , error rate 0.45 %
+decreasing
+epoch 18, minibatch 4/5, train cost 24.63 , error rate 0.40 %
+decreasing
+epoch 18, minibatch 5/5, train cost 0.79 , error rate 0.40 %
+decreasing
+epoch 19, minibatch 1/5, train cost 17.28 , error rate 0.55 %
+decreasing
+epoch 19, minibatch 2/5, train cost 30.38 , error rate 0.55 %
+decreasing
+epoch 19, minibatch 3/5, train cost 17.28 , error rate 0.55 %
+decreasing
+epoch 19, minibatch 4/5, train cost 33.15 , error rate 0.60 %
+decreasing
+epoch 19, minibatch 5/5, train cost 23.58 , error rate 0.60 %
+decreasing
+epoch 20, minibatch 1/5, train cost 24.86 , error rate 0.45 %
+decreasing
+epoch 20, minibatch 2/5, train cost 7.05 , error rate 0.45 %
+decreasing
+epoch 20, minibatch 3/5, train cost 24.86 , error rate 0.45 %
+decreasing
+epoch 20, minibatch 4/5, train cost 6.26 , error rate 0.40 %
+decreasing
+epoch 20, minibatch 5/5, train cost 18.95 , error rate 0.40 %
+decreasing
+training @ iter =  100  patience =  100
+epoch 21, minibatch 1/5, train cost 8.61 , error rate 0.55 %
+decreasing
+100 100
+The code for file DogVsCat_patchtrain_lenet.py ran for -20.40m
+Optimization complete.
+Best validation score of inf % obtained at iteration 1,with test performance 0.000000 %
+practical using time : 50.96m 
+
