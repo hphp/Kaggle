@@ -38,7 +38,7 @@ nkerns=[20, 50]
 batch_size = 1
 
 # allocate symbolic variables for the data
-index = T.lscalar()  # index to a [mini]batch
+#index = T.lscalar()  # index to a [mini]batch
 x = T.matrix('x')   # the data is presented as rasterized images
 
 # Reshape matrix of rasterized images of shape (1, 50*50)

@@ -32,12 +32,12 @@ import transform_data_to_format as tdtf
 DataHome = "../../data/Kaggle/DogVsCatData/"
 train_dataset_route = DataHome + "DogVsCat_train_feature_1w.csv"
 valid_dataset_route = DataHome + "DogVsCat_valid_feature_1w.csv"
-train_model_route = DataHome + "DogVsCat_trained_model_lenet_1w_feature.np.pkl"
+train_model_route = DataHome + "DogVsCat_runtrained_model_lenet_1w_feature.np.pkl"
 if_trained_yet = False
 
 rng = numpy.random.RandomState(23455)
 nkerns=[20, 50]
-batch_size = 50
+batch_size = 100 
 
 layer0_input_img_size = (100, 100) # ishape
 filter0_shape = (40, 40)
@@ -153,7 +153,7 @@ def load_trained_model():
                                     W=layer3_state[0], b=layer3_state[1] \
                                 )
 
-def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, learning_rate=0.5, n_epochs=10):
+def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, learning_rate=0.78, n_epochs=100):
 
     global train_dataset_route
     global valid_dataset_route
@@ -216,7 +216,7 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, learning
     for param_i, grad_i in zip(params, grads):
         updates.append((param_i, param_i - learning_rate * grad_i))
 
-    train_model = theano.function([index], cost, updates=updates,
+    train_model = theano.function([index], [cost,layer3.errors(y)], updates=updates,
           givens={
             x: train_set_x[index * batch_size: (index + 1) * batch_size],
             y: train_set_y[index * batch_size: (index + 1) * batch_size]})
@@ -226,7 +226,7 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, learning
     ###############
     print '... training'
     # early-stopping parameters
-    patience = 10000 # look as this many examples regardless
+    patience = 100 # look as this many examples regardless
     patience_increase = 2  # wait this much longer when a new best is
                            # found
     improvement_threshold = 0.995  # a relative improvement of this much is
@@ -246,6 +246,9 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, learning
     epoch = 0
     done_looping = False
 
+    min_train_cost = 10000
+    decreasing_num = 0
+
     while (epoch < n_epochs) and (not done_looping):
         epoch = epoch + 1
         for minibatch_index in xrange(n_train_batches):
@@ -254,11 +257,30 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, learning
 
             if iter % 100 == 0:
                 print 'training @ iter = ', iter , ' patience = ' , patience
-            cost_ij = train_model(minibatch_index)
-            print('epoch %i, minibatch %i/%i, train cost %f %%' % \
+            cost_ij, error_rate = train_model(minibatch_index)
+            print('epoch %i, minibatch %i/%i, train cost %.2f , error rate %.2f %%' % \
                   (epoch, minibatch_index + 1, n_train_batches, \
-                   cost_ij))
-
+                   cost_ij, error_rate))
+            if cost_ij < min_train_cost:
+                decreasing_num = 0
+                min_train_cost = cost_ij
+                layer0_state = layer0.__getstate__()
+                layer1_state = layer1.__getstate__()
+                layer2_state = layer2.__getstate__()
+                layer3_state = layer3.__getstate__()
+                trained_model_list = [layer0_state, layer1_state, layer2_state, layer3_state]
+                trained_model_array = numpy.asarray(trained_model_list)
+                classifier_file = open(train_model_route, 'w')
+                cPickle.dump([1,2,3], classifier_file, protocol=2)
+                numpy.save(classifier_file, trained_model_array)
+                classifier_file.close()
+            
+            else:
+                print "decreasing"
+                decreasing_num += 1
+                if decreasing_num > 100:
+                    done_looping = True
+                    break
             '''
             if (iter + 1) % validation_frequency == 0:
 
@@ -281,16 +303,6 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, learning
                     # save best validation score and iteration number
                     best_validation_loss = this_validation_loss
                     best_iter = iter
-                    layer0_state = layer0.__getstate__()
-                    layer1_state = layer1.__getstate__()
-                    layer2_state = layer2.__getstate__()
-                    layer3_state = layer3.__getstate__()
-                    trained_model_list = [layer0_state, layer1_state, layer2_state, layer3_state]
-                    trained_model_array = numpy.asarray(trained_model_list)
-                    classifier_file = open(train_model_route, 'w')
-                    cPickle.dump([1,2,3], classifier_file, protocol=2)
-                    numpy.save(classifier_file, trained_model_array)
-                    classifier_file.close()
             '''
             if patience <= iter:
                 done_looping = True
@@ -312,7 +324,7 @@ def run_train():
     if if_trained_yet:
         load_trained_model()
     train_by_lenet5( \
-        tr_start_index=0, tr_limit=1000, \
+        tr_start_index=0, tr_limit=100 , \
         vl_start_index=0, vl_limit=10 \
     )
 

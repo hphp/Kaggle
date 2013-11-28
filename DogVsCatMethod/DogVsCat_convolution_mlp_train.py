@@ -27,13 +27,13 @@ from convolutional_mlp import LeNetConvPoolLayer
 import load_data
 
 DataHome = "../../data/Kaggle/DogVsCatData/"
-train_dataset_route = DataHome + "DogVsCat_train_feature_2500.csv"
-valid_dataset_route = DataHome + "DogVsCat_valid_feature_2500.csv"
-train_model_route = DataHome + "DogVsCat_trained_model_lenet_2500_feature.np.pkl"
-train_limit = None
-valid_limit = None
+train_dataset_route = DataHome + "DogVsCat_train_feature_1w.csv"
+valid_dataset_route = DataHome + "DogVsCat_valid_feature_1w.csv"
+train_model_route = DataHome + "DogVsCat_trained_model_lenet_1w_feature.np.pkl"
+train_limit = 100 #None
+valid_limit = 100 # None
 
-def evaluate_lenet5(learning_rate=0.05, n_epochs=1000,
+def evaluate_lenet5(learning_rate=0.05, n_epochs=10,
                     nkerns=[20, 50], batch_size=50):
     global train_dataset_route
     global valid_dataset_route
@@ -72,7 +72,7 @@ def evaluate_lenet5(learning_rate=0.05, n_epochs=1000,
     y = T.ivector('y')  # the labels are presented as 1D vector of
                         # [int] labels
 
-    ishape = (50, 50)  # this is the size of MNIST images
+    ishape = (100, 100)  # this is the size of MNIST images
 
     ######################
     # BUILD ACTUAL MODEL #
@@ -81,23 +81,23 @@ def evaluate_lenet5(learning_rate=0.05, n_epochs=1000,
 
     # Reshape matrix of rasterized images of shape (batch_size,28*28)
     # to a 4D tensor, compatible with our LeNetConvPoolLayer
-    layer0_input = x.reshape((batch_size, 1, 50, 50))
+    layer0_input = x.reshape((batch_size, 1, 100, 100))
 
     # Construct the first convolutional pooling layer:
     # filtering reduces the image size to (28-5+1,28-5+1)=(24,24)
     # maxpooling reduces this further to (24/2,24/2) = (12,12)
     # 4D output tensor is thus of shape (batch_size,nkerns[0],12,12)
     layer0 = LeNetConvPoolLayer(rng, input=layer0_input,
-            image_shape=(batch_size, 1, 50, 50),
-            filter_shape=(nkerns[0], 1, 10, 10), poolsize=(2, 2))
+            image_shape=(batch_size, 1, 100, 100),
+            filter_shape=(nkerns[0], 1, 40, 40), poolsize=(2, 2))
 
     # Construct the second convolutional pooling layer
     # filtering reduces the image size to (12-5+1,12-5+1)=(8,8)
     # maxpooling reduces this further to (8/2,8/2) = (4,4)
     # 4D output tensor is thus of shape (nkerns[0],nkerns[1],4,4)
     layer1 = LeNetConvPoolLayer(rng, input=layer0.output,
-            image_shape=(batch_size, nkerns[0], 20, 20),
-            filter_shape=(nkerns[1], nkerns[0], 5, 5), poolsize=(2, 2))
+            image_shape=(batch_size, nkerns[0], 30, 30),
+            filter_shape=(nkerns[1], nkerns[0], 15, 15), poolsize=(2, 2))
 
     # the TanhLayer being fully-connected, it operates on 2D matrices of
     # shape (batch_size,num_pixels) (i.e matrix of rasterized images).
