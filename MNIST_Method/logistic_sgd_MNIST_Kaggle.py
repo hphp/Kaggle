@@ -1,3 +1,11 @@
+'''
+by hp_carrot
+2013-11-28
+
+change parameters to see how train_error/train_cost/valid_cost goes.
+
+2013-10/11-x
+'''
 """
 This tutorial introduces logistic regression using Theano and stochastic
 gradient descent.
@@ -223,8 +231,8 @@ def load_data(dataset):
     #the number of rows in the input. It should give the target
     #target to the example with the same index in the input.
     test_set = read_test_data_to_ndarray(DataHome+"test.csv", limit=2800)
-    valid_set = read_data_to_ndarray(DataHome+"valid.csv", limit=2100)
-    train_set = read_data_to_ndarray(DataHome+"train.csv", limit=2100)
+    valid_set = read_data_to_ndarray(DataHome+"valid.csv", limit=21000)
+    train_set = read_data_to_ndarray(DataHome+"train.csv", limit=21000)
 
     def shared_dataset(data_xy, borrow=True):
         """ Function that loads the dataset into shared variables
@@ -260,7 +268,7 @@ def load_data(dataset):
     return rval
 
 
-def sgd_optimization_mnist(learning_rate=0.39, n_epochs=10000,
+def sgd_optimization_mnist(learning_rate=0.13, n_epochs=10000,
                            dataset='../data/mnist.pkl.gz',
                            batch_size=700):
     """
@@ -354,7 +362,7 @@ def sgd_optimization_mnist(learning_rate=0.39, n_epochs=10000,
     ###############
     #print '... training the model'
     # early-stopping parameters
-    patience = 5000  # look as this many examples regardless
+    patience = 500 # look as this many examples regardless
     patience_increase = 2  # wait this much longer when a new best is
                                   # found
     improvement_threshold = 0.995  # a relative improvement of this much is
@@ -372,6 +380,7 @@ def sgd_optimization_mnist(learning_rate=0.39, n_epochs=10000,
 
     done_looping = False
     epoch = 0
+    last_validation_loss = 100.
     while (epoch < n_epochs) and (not done_looping):
         epoch = epoch + 1
         for minibatch_index in xrange(n_train_batches):
@@ -388,6 +397,11 @@ def sgd_optimization_mnist(learning_rate=0.39, n_epochs=10000,
                 validation_losses = [validate_model(i)
                                      for i in xrange(n_valid_batches)]
                 this_validation_loss = numpy.mean(validation_losses)
+
+                #if this_validation_loss > last_validation_loss:
+                #    print "this is a fold point ----"
+                
+                last_validation_loss = this_validation_loss
 
                 print('epoch %i, minibatch %i/%i, validation error %f %%' % \
                     (epoch, minibatch_index + 1, n_train_batches,
