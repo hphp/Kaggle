@@ -85,10 +85,11 @@ def isGray(image):
 
 def detect_dogs(image):
     start_time = cv2.getTickCount()
-    image=cv2.resize(image,(25,25))
+    #image=cv2.resize(image,(25,25))
     if not isGray(image):
         image = cv2.cvtColor(image, cv2.cv.CV_BGR2GRAY)
     image = cv2.equalizeHist(image)
+    print image.shape
     classifier = cv2.CascadeClassifier( '/Users/xcbfreedom/projects/data/Kaggle/DogVsCatData/Haar_data/cascade.xml')
     dog_rects = classifier.detectMultiScale( image, 1.1, 0, 0)
 
