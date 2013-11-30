@@ -75,28 +75,24 @@ def show_rectangle(img, rect,color=(255,0,255)):
     cv2.rectangle(img_for_draw, (x,y), (x+w,y+h), color, 1)
     #cv2.rectangle(img_for_draw, (x,y), (x+w,y+h), (randint(0,255),0,randint(0,255)), 1)
     cv2.imshow( "detecting", img_for_draw)
-    #time.sleep(0.1)
     if 27==cv2.waitKey(1):
         sys.exit(0)    
-
 
 def isGray(image):
     """Return True if the image has one channel per pixel."""
     #print image
     return image.ndim < 3
 
-
 def detect_dogs(image):
     start_time = cv2.getTickCount()
-    image=cv2.resize(image,(50,50))
+    image=cv2.resize(image,(25,25))
     if not isGray(image):
         image = cv2.cvtColor(image, cv2.cv.CV_BGR2GRAY)
     image = cv2.equalizeHist(image)
     classifier = cv2.CascadeClassifier( '/Users/xcbfreedom/projects/data/Kaggle/DogVsCatData/Haar_data/cascade.xml')
+    dog_rects = classifier.detectMultiScale( image, 1.1, 0, 0)
 
-    dog_rects = classifier.detectMultiScale( image, 1.1, 1, 0, (24,24))
-
-    print 'found:', len(dog_rects)
+    print 'found:', len(dog_rects),dog_rects
     for item in dog_rects:
         x, y, w, h = item 
         cv2.rectangle(image, (x,y), (x+w,y+h), (255,0,0), 1)
