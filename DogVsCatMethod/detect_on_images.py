@@ -15,6 +15,7 @@ wind_name="detecting"
 cv2.namedWindow(wind_name)
 cv2.moveWindow(wind_name, 800,0)    
 
+
 def detectByMuitScaleSlideWindows(img,windowSize=(15,15),wStep=5,hStep=5,classifier=None):
     dog_rects=[]
     cat_rects=[]
