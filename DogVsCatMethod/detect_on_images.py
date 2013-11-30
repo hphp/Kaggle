@@ -6,7 +6,6 @@ import time
 from numpy import arange
 from data_browsers import browse_images
 
-
 verbosity = logging.INFO
 logging.basicConfig(filename=None,level=verbosity,)
 
