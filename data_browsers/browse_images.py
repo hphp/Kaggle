@@ -1,17 +1,19 @@
 import cv2
 import os
 import sys
+import re
 import time
 import random
 
 #height , width , layers =  img1.shape
-
 
 def resize(img):
     height , width =(200,200)
     img=cv2.resize(img, (width,height))
     return img
 
+def isOK(filename):
+    return re.match(r'^.*\.jpg$',filename)
 
 def simple_browse(dir_path, img_handle=None):
     cv2.namedWindow("Example1")
@@ -20,8 +22,11 @@ def simple_browse(dir_path, img_handle=None):
     for root, dirs, files in dir_list:
         for f in files:
             filename=os.path.join(root, f)
+            if not isOK(filename):
+                print 'skip illegal file:',filename
+                continue
             num+=1
-            print num
+            print num 
             img=cv2.imread(filename)
             if img_handle:
                 img=img_handle(img)
@@ -38,6 +43,9 @@ def random_browse(images_dir, img_handle=None):
         while True:
             f=files[random.randint(0,len(files)-1)]
             filename=os.path.join(root, f)
+            if not isOK(filename):
+                print 'skip illegal file:',filename
+                continue
             img=cv2.imread(filename)
             if img_handle:
                 img=img_handle(img)

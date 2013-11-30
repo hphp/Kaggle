@@ -6,15 +6,15 @@ import time
 from numpy import arange
 from data_browsers import browse_images
 
-
 verbosity = logging.INFO
 logging.basicConfig(filename=None,level=verbosity,)
 
-#from DogVsCat_lenet_for_detect import image_recognition
+from DogVsCat_lenet_for_detect import image_recognition
 
 wind_name="detecting"
 cv2.namedWindow(wind_name)
 cv2.moveWindow(wind_name, 800,0)    
+
 
 def detectByMuitScaleSlideWindows(img,windowSize=(15,15),wStep=5,hStep=5,classifier=None):
     dog_rects=[]
@@ -46,7 +46,7 @@ def detectByMuitScaleSlideWindows(img,windowSize=(15,15),wStep=5,hStep=5,classif
             for y in yRange:
                 cnt+=1
                 rect = (x,y,patchWidth,patchHeight)
-                show_rectangle(img,rect)
+                #show_rectangle(img,rect)
                 subImg=img[y:y+patchHeight,x:x+patchWidth]
                 #if classifier.isDog(subImg):
                 the_label=classifier.Recognize(subImg)
@@ -75,26 +75,30 @@ def show_rectangle(img, rect,color=(255,0,255)):
     cv2.rectangle(img_for_draw, (x,y), (x+w,y+h), color, 1)
     #cv2.rectangle(img_for_draw, (x,y), (x+w,y+h), (randint(0,255),0,randint(0,255)), 1)
     cv2.imshow( "detecting", img_for_draw)
-    #time.sleep(0.1)
     if 27==cv2.waitKey(1):
         sys.exit(0)    
 
-
 def isGray(image):
     """Return True if the image has one channel per pixel."""
+    #print image
     return image.ndim < 3
 
-
 def detect_dogs(image):
+    start_time = cv2.getTickCount()
+    #image=cv2.resize(image,(25,25))
     if not isGray(image):
         image = cv2.cvtColor(image, cv2.cv.CV_BGR2GRAY)
     image = cv2.equalizeHist(image)
+    print image.shape
     classifier = cv2.CascadeClassifier( '/Users/xcbfreedom/projects/data/Kaggle/DogVsCatData/Haar_data/cascade.xml')
+    dog_rects = classifier.detectMultiScale( image, 1.1, 0, 0)
 
-    dog_rects = classifier.detectMultiScale( image, 1.2, 3, 0, (50,50))
+    print 'found:', len(dog_rects),dog_rects
     for item in dog_rects:
         x, y, w, h = item 
         cv2.rectangle(image, (x,y), (x+w,y+h), (255,0,0), 1)
+    end_time = cv2.getTickCount() 
+    logging.info("time cost:%gms",(end_time-start_time)/cv2.getTickFrequency()*1000.)
     return image
 
 
@@ -156,6 +160,7 @@ class DogClassifier():
         return (1==label)
     
     def Recognize(self,img):
+        #return 2
         label=image_recognition(img)
         return label
         
