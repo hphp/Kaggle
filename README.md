@@ -14,6 +14,9 @@
 
             *_feature_*.csv -- feature csv file
             *_trained_model_*.pkl -- trained model
+
+        dog == 1
+        cat == 0
             
         MNISTData
             train.csv -- train data from Kaggle
