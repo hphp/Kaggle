@@ -9,7 +9,10 @@ from numpy import arange
 verbosity = logging.INFO
 logging.basicConfig(filename=None,level=verbosity,)
 
-from DogVsCat_lenet_for_detect import image_recognition
+#from DogVsCat_lenet_for_detect import image_recognition
+if not "../Common_Method/" in sys.path:
+    sys.path.append("../Common_Method/")
+from ls_detect import image_recognition
 
 
 def detectByMuitScaleSlideWindows(img,windowSize=(15,15),wStep=5,hStep=5,classifier=None):
@@ -126,7 +129,7 @@ def main():
         sys.exit(0)
 
     img = cv2.imread(sys.argv[1])
-    img=cv2.resize(img,(100,100))
+    img=cv2.resize(img,(150,150))
 
     #printDetail(img)
     detect_and_draw(img)
