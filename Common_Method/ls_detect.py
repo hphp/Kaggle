@@ -51,7 +51,7 @@ def load_trained_model():
     global if_load_trained_model
     global train_model_route 
     global classifier
-    global validate_model
+    global test_results
 
     if_load_trained_model = True 
     print "loading trained model for the first time"

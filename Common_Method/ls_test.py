@@ -1,8 +1,8 @@
 #!/usr/bin/python
 '''
 written by hp_carrot
-2013-11-30
-image recognition using logistic regression
+2013-12-02
+using logsiticregression to check valid dataset error rate using trained model.
 '''
 
 import cPickle
@@ -51,12 +51,15 @@ classifier = LogisticRegression(input=x, n_in=in_shape, n_out=layer0_output_shap
 # definition for theano.function
 validate_model = theano.function(inputs=[x, y], \
                     outputs=classifier.errors(y))
+validate_results = theano.function(inputs=[x], \
+                    outputs=classifier.y_pred)
 
 def load_trained_model():
     global if_load_trained_model
     global train_model_route 
     global classifier
     global validate_model
+    global validate_results
 
     if_load_trained_model = 1
     print "loading trained model for the first time"
@@ -71,11 +74,14 @@ def load_trained_model():
     # definition for theano.function
     validate_model = theano.function(inputs=[x, y],
             outputs=classifier.errors(y))
+    validate_results = theano.function(inputs=[x],
+            outputs=classifier.y_pred)
 
 def validation_err(vl_start_index=0, vl_limit=None):
     
     global if_load_trained_model
     global validate_model
+    global validate_results
 
     if if_load_trained_model == 0:
         load_trained_model()
@@ -84,6 +90,23 @@ def validation_err(vl_start_index=0, vl_limit=None):
     print valid_set[1]
     valid_set_x, valid_set_y = valid_set
     validation_loss = validate_model(valid_set_x, valid_set_y)
+    validation_pred_y = validate_results(valid_set_x)
+    print validation_pred_y
+    label = [0, 0]
+    right = [0, 0]
+    for i in range(len(validation_pred_y)):
+        y_pred = validation_pred_y[i]
+        y = valid_set_y[i]
+        right[y] += 1
+        if y != y_pred:
+            if y == 0:
+                label[1] += 1
+            else:
+                label[0] += 1 
+
+    t_num = len(validation_pred_y)
+    right_num = t_num - label[0] - label[1]
+    print "total %d, 0:1=%d:%d, right %d , wrong label to bg %d , label to 0 %d " % (t_num, right[0], right[1], right_num, label[1], label[0])
     print('validation error %f %%' % \
         (validation_loss * 100.))
 
