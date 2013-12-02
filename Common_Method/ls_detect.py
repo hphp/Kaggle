@@ -114,7 +114,7 @@ def image_recognition(img):
                           os.path.split(__file__)[1] +
                           ' ran for %d secs' % ((end_time - start_time)))
     '''
-    return img_label[0]
+    return 1-img_label[0]
 
 def test_image_recgonition(img_route):
     img = cv2.imread(img_route)
