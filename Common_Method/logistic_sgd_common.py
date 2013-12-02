@@ -42,8 +42,10 @@ layer0_output_shape = 2
 if_load_trained_model = True #False 
 
 def sgd_optimization_mnist(tr_start_index=1, tr_limit=5000, vl_start_index=1, vl_limit=5000,
-                           learning_rate=0.005, n_epochs=10000):
+                           learning_rate=0.13, n_epochs=5000
+                           , output_filename="ls.out"):
 
+    output_file = open(output_filename,'w')
     # allocate symbolic variables for the data
     index = T.lscalar()  # index to a [mini]batch
     x = T.matrix('x')  # the data is presented as rasterized images
@@ -97,19 +99,6 @@ def sgd_optimization_mnist(tr_start_index=1, tr_limit=5000, vl_start_index=1, vl
 
     # compiling a Theano function that computes the mistakes that are made by
     # the model on a minibatch
-    '''
-    test_model = theano.function(inputs=[index],
-            outputs=classifier.errors(y),
-            givens={
-                x: test_set_x[index * batch_size: (index + 1) * batch_size],
-                y: test_set_y[index * batch_size: (index + 1) * batch_size]})
-
-    test_results = theano.function(inputs=[index],
-            outputs= classifier.y_pred,
-            givens={
-                x: test_set_x[index * batch_size: (index + 1) * batch_size],
-                y: test_set_y[index * batch_size: (index + 1) * batch_size]})
-    '''
     validate_model = theano.function(inputs=[index],
             outputs=classifier.errors(y),
             givens={
@@ -128,11 +117,11 @@ def sgd_optimization_mnist(tr_start_index=1, tr_limit=5000, vl_start_index=1, vl
     # compiling a Theano function `train_model` that returns the cost, but in
     # the same time updates the parameter of the model based on the rules
     # defined in `updates`
-    train_model = theano.function(inputs=[index],
-            outputs=[cost, classifier.errors(y)],
-            updates=updates,
-            givens={
-                x: train_set_x[index * batch_size:(index + 1) * batch_size],
+    train_model = theano.function(inputs=[index], \
+            outputs=[cost, classifier.errors(y)], \
+            updates=updates, \
+            givens={ \
+                x: train_set_x[index * batch_size:(index + 1) * batch_size], \
                 y: train_set_y[index * batch_size:(index + 1) * batch_size]})
 
     ###############
@@ -172,7 +161,7 @@ def sgd_optimization_mnist(tr_start_index=1, tr_limit=5000, vl_start_index=1, vl
             last_train_err = train_err
             c_d_rate = (last_train_cost - minibatch_avg_cost) / (last_train_cost) * 100.
             last_train_cost = minibatch_avg_cost
-            print('epoch %i, minibatch %i/%i, train_cost %f , train_error %.2f %%, decreasing rate %f %%, cost_decreasing rate %f %%' % \
+            print >> output_file, ('epoch %i, minibatch %i/%i, train_cost %f , train_error %.2f %%, decreasing rate %f %%, cost_decreasing rate %f %%' % \
                 (epoch, minibatch_index + 1, n_train_batches,
                 minibatch_avg_cost,
                 train_err* 100.
@@ -191,7 +180,7 @@ def sgd_optimization_mnist(tr_start_index=1, tr_limit=5000, vl_start_index=1, vl
                                      for i in xrange(n_valid_batches)]
                 this_validation_loss = numpy.mean(validation_losses)
 
-                print('epoch %i, minibatch %i/%i, validation error %f %%' % \
+                print >> output_file, ('epoch %i, minibatch %i/%i, validation error %f %%' % \
                     (epoch, minibatch_index + 1, n_train_batches,
                     this_validation_loss * 100.))
 
@@ -205,7 +194,6 @@ def sgd_optimization_mnist(tr_start_index=1, tr_limit=5000, vl_start_index=1, vl
                     best_validation_loss = this_validation_loss
 
                     # load trained_model to 
-                    '''
                     layer_state = classifier.__getstate__()
                     trained_model_list = [layer_state]
                     trained_model_array = numpy.asarray(trained_model_list)
@@ -213,7 +201,6 @@ def sgd_optimization_mnist(tr_start_index=1, tr_limit=5000, vl_start_index=1, vl
                     cPickle.dump([1,2,3], classifier_file, protocol=2)
                     numpy.save(classifier_file, trained_model_array)
                     classifier_file.close()
-                    '''
                     '''
                     test_losses = [test_model(i)
                                    for i in xrange(n_test_batches)]
@@ -232,29 +219,31 @@ def sgd_optimization_mnist(tr_start_index=1, tr_limit=5000, vl_start_index=1, vl
                 break
 
     end_time = time.clock()
-    print(('Optimization complete with best validation score of %f %%,'
+    print >> output_file, (('Optimization complete with best validation score of %f %%,'
            'with test performance %f %%'
            'with best train_performance %f %%') %
                  (best_validation_loss * 100., test_score * 100., best_train_loss * 100.))
-    print 'The code run for %d epochs, with %f epochs/sec' % (
+    print >> output_file, 'The code run for %d epochs, with %f epochs/sec' % (
         epoch, 1. * epoch / (end_time - start_time))
     print >> sys.stderr, ('The code for file ' +
                           os.path.split(__file__)[1] +
                           ' ran for %.1fs' % ((end_time - start_time)))
-    '''
-    test_res = [test_results(i)
-        for i in xrange(n_test_batches)]
-    #print type(test_res)
-    #print len(test_res)
-    a = []
-    for i in range(len(test_res)):
-        for ele in test_res[i]:
-            a.append(ele)
-    #print len(a)
+    output_file.close()
 
-    #print a
-    write_to_csv(a,'../data/pringle_2.csv')
-    '''
+def diff_learning_rate_anls():
+    for c_learning_rate in numpy.arange(0.01, 0.02, 0.005):
+        title = "ls_anls_" + str(c_learning_rate)
+        name = title + ".out"
+        sgd_optimization_mnist(tr_start_index=0, tr_limit=5000, vl_start_index=0, vl_limit=5000
+                               , learning_rate=float(c_learning_rate)
+                               , n_epochs=5000
+                               , output_filename=name)
+    for c_learning_rate in numpy.arange(0.01, 0.02, 0.005):
+        title = "ls_anls_" + str(c_learning_rate)
+        name = title + ".out"
+        cmd = "./ls_anls.sh " + name + " > " + title + ".excel"
+        os.system(cmd)
 
 if __name__ == '__main__':
-    sgd_optimization_mnist()
+    #sgd_optimization_mnist()
+    diff_learning_rate_anls()
