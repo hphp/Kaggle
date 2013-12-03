@@ -176,3 +176,19 @@ def read_feature_from_csv(filname="train.csv", limit=None, header_n = 1):
         if limit != None and index == limit + header_n:
             break
     return data
+def read_s_feature_from_csv(filname="train.csv", limit=None, header_n = 1):
+    # header_n = line numbers of header.
+
+    print "Reading data %s" % filname
+    data = []
+    csv_reader = csv.reader(open(filname, "r"), delimiter=",")
+    index = 0
+    for row in csv_reader:
+        index += 1
+        if (header_n == 1) & (index <= header_n ):
+            continue
+        row = map ( str, (row[0:]))
+        data.append(row)
+        if limit != None and index == limit + header_n:
+            break
+    return data
