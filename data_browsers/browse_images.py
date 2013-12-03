@@ -15,8 +15,9 @@ def resize(img):
 def isOK(filename):
     return re.match(r'^.*\.jpg$',filename)
 
-def simple_browse(dir_path, img_handle=None):
-    cv2.namedWindow("Example1")
+def simple_browse(dir_path, img_handle=None, toShow=True):
+    if toShow:
+        cv2.namedWindow("Example1")
     num=0
     dir_list = os.walk(dir_path)
     for root, dirs, files in dir_list:
@@ -30,13 +31,16 @@ def simple_browse(dir_path, img_handle=None):
             img=cv2.imread(filename)
             if img_handle:
                 img=img_handle(img)
-            cv2.imshow( "Example1", img)
-            if 27==cv2.waitKey(500):
-                break
-    cv2.destroyAllWindows()
+            if toShow:
+                cv2.imshow( "Example1", img)
+                if 27==cv2.waitKey(500):
+                    break
+    if toShow:
+        cv2.destroyAllWindows()
 
-def random_browse(images_dir, img_handle=None):
-    cv2.namedWindow("Example1")
+def random_browse(images_dir, img_handle=None, toShow=True):
+    if toShow:
+        cv2.namedWindow("Example1")
     dir_list = os.walk(images_dir)
     num=0
     for root, dirs, files in dir_list:
@@ -51,11 +55,13 @@ def random_browse(images_dir, img_handle=None):
                 img=img_handle(img)
             num+=1
             print num
-            cv2.imshow( "Example1", img)
-            if 27==cv2.waitKey(500):
-                break
+            if toShow:
+                cv2.imshow( "Example1", img)
+                if 27==cv2.waitKey(500):
+                    break
         break  # just handle the files in top dir.
-    cv2.destroyAllWindows()
+    if toShow:
+        cv2.destroyAllWindows()
 if __name__=="__main__":
     if len(sys.argv)!=3:
         print  ''' USAGE: %s <images_path> [simple|random]''' % sys.argv[0]

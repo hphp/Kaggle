@@ -4,19 +4,47 @@ import sys
 import logging
 import time
 from numpy import arange
+import numpy
 from data_browsers import browse_images
 
 verbosity = logging.INFO
 logging.basicConfig(filename=None,level=verbosity,)
 
-from DogVsCat_lenet_for_detect import image_recognition
+#from DogVsCat_lenet_for_detect import image_recognition
+if not "../Common_Method/" in sys.path:
+    sys.path.append("../Common_Method/")
+from ls_detect import image_recognition
+
+
 
 wind_name="detecting"
 cv2.namedWindow(wind_name)
 cv2.moveWindow(wind_name, 800,0)    
 
+positive_num=0
 
-def detectByMuitScaleSlideWindows(img,windowSize=(15,15),wStep=5,hStep=5,classifier=None):
+
+class MultiClassifier():
+    Negative=0 
+    Dog=1
+    Cat=2
+    def __init__(self):
+        self.label_type = [0, 0, 0]
+        pass
+
+    def isDog(self,img):
+        label=image_recognition(img)
+        self.label_type[label] += 1
+        print self.label_type
+        print label
+        return (1==label)
+    
+    def Recognize(self,img):
+        #return 2
+        label=image_recognition(img)
+        return label
+        
+def check_multiLocation_multiScale_windows(img,windowSize=(15,15),wStep=5,hStep=5,classifier=None):
     dog_rects=[]
     cat_rects=[]
     imgHeight=img.shape[0]
@@ -46,29 +74,20 @@ def detectByMuitScaleSlideWindows(img,windowSize=(15,15),wStep=5,hStep=5,classif
             for y in yRange:
                 cnt+=1
                 rect = (x,y,patchWidth,patchHeight)
-                #show_rectangle(img,rect)
+                #_show_rectangle(img,rect)
                 subImg=img[y:y+patchHeight,x:x+patchWidth]
                 #if classifier.isDog(subImg):
                 the_label=classifier.Recognize(subImg)
-                if the_label==DogClassifier.Dog:
+                if the_label==MultiClassifier.Dog:
                     print "found one dog:",rect
                     dog_rects.append(rect)
-                elif the_label==DogClassifier.Cat:
+                elif the_label==MultiClassifier.Cat:
                     print "found one cat:",rect
                     cat_rects.append(rect)
-                    
     logging.info("total checked:%s",cnt)
     return (dog_rects,cat_rects)
 
-def detectObject(img):
-    """
-    This should be pure opencv and reasonably quick.
-    It carrys out the actual detection, and returns a list of objects found
-    """
-    objects=[(20,20,50,10),(30,50,20,40)]
-    return objects
-
-def show_rectangle(img, rect,color=(255,0,255)):
+def _show_rectangle(img, rect,color=(255,0,255)):
     #time.sleep(2)
     img_for_draw= img.copy()
     x,y,w,h=rect
@@ -78,50 +97,34 @@ def show_rectangle(img, rect,color=(255,0,255)):
     if 27==cv2.waitKey(1):
         sys.exit(0)    
 
-def isGray(image):
+def _isGray(image):
     """Return True if the image has one channel per pixel."""
     #print image
     return image.ndim < 3
 
-def detect_dogs(image):
-    start_time = cv2.getTickCount()
-    #image=cv2.resize(image,(25,25))
-    if not isGray(image):
-        image = cv2.cvtColor(image, cv2.cv.CV_BGR2GRAY)
-    image = cv2.equalizeHist(image)
-    print image.shape
-    classifier = cv2.CascadeClassifier( '/Users/xcbfreedom/projects/data/Kaggle/DogVsCatData/Haar_data/cascade.xml')
-    dog_rects = classifier.detectMultiScale( image, 1.1, 0, 0)
-
-    print 'found:', len(dog_rects),dog_rects
-    for item in dog_rects:
-        x, y, w, h = item 
-        cv2.rectangle(image, (x,y), (x+w,y+h), (255,0,0), 1)
-    end_time = cv2.getTickCount() 
-    logging.info("time cost:%gms",(end_time-start_time)/cv2.getTickFrequency()*1000.)
-    return image
-
-
-def detect_and_draw( img):
+def detect_by_slide_windows( img):
     """
     draw a box with opencv on the image around the detected faces and display the output
     """
     from random import randint 
     start_time = cv2.getTickCount()
-    dog_classifier=DogClassifier()
-    print dog_classifier
-    img=cv2.resize(img,(200,200))
-    dogs,cats = detectByMuitScaleSlideWindows(img,windowSize=(50,50),classifier=dog_classifier)
+    dogcat_classifier=MultiClassifier()
+    print dogcat_classifier
+    img=cv2.resize(img,(100,100))
+    dogs,cats = check_multiLocation_multiScale_windows(img,windowSize=(50,50),classifier=dogcat_classifier)
     end_time = cv2.getTickCount() 
     logging.info("time cost:%gms",(end_time-start_time)/cv2.getTickFrequency()*1000.)
-    #dogs = detectObject(img)
     print "found dogs:",len(dogs)
     max_rect=(0,0,0,0)
+    sum_rect=numpy.asarray((0,0,0,0),dtype=numpy.float)
     for rect in dogs:
         x,y,w,h=rect
+        sum_rect +=rect
         if w*h>max_rect[2]*max_rect[3]:
             max_rect=rect
-    x,y,w,h=max_rect
+        #cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,255), 1)
+    #x,y,w,h=max_rect
+    x,y,w,h=numpy.asarray(sum_rect/len(dogs),dtype=numpy.uint)
     cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,255), 1)
 
     print "found cats:",len(cats)
@@ -133,38 +136,36 @@ def detect_and_draw( img):
     x,y,w,h=max_rect
     cv2.rectangle(img, (x,y), (x+w,y+h), (255,0,0), 1)
     return img
-            
+ 
+
+def detect_by_harr_adboost(image):
+    global positive_num
+    start_time = cv2.getTickCount()
+    #image=cv2.resize(image,(25,25))
+    if not _isGray(image):
+        image = cv2.cvtColor(image, cv2.cv.CV_BGR2GRAY)
+    image = cv2.equalizeHist(image)
+    print image.shape
+    #positive--dogs,  negative--cats,others
+    classifier = cv2.CascadeClassifier( '/Users/xcbfreedom/projects/data/Kaggle/DogVsCatData/Haar_data/cascade.xml')
+
+    dog_rects = classifier.detectMultiScale( image, 1.1, 0, 0)
+    positive_num+=1 if len(dog_rects) else 0
+    print 'found:',len(dog_rects),dog_rects
+    print 'total positive pics:',positive_num
+    for item in dog_rects:
+        x, y, w, h = item 
+        cv2.rectangle(image, (x,y), (x+w,y+h), (255,0,0), 1)
+    end_time = cv2.getTickCount() 
+    logging.info("time cost:%gms",(end_time-start_time)/cv2.getTickFrequency()*1000.)
+    return image
+
+           
 
 def printDetail(img):
     print dir(img)
     print img
-
-def main():
-    """Run the default object detector"""
-    #printDetail(img)
-
-
-class DogClassifier():
-    Dog=1
-    Cat=0
-    Other=2 
-    def __init__(self):
-        self.label_type = [0, 0, 0]
-        pass
-
-    def isDog(self,img):
-        label=image_recognition(img)
-        self.label_type[label] += 1
-        print self.label_type
-        print label
-        return (1==label)
-    
-    def Recognize(self,img):
-        #return 2
-        label=image_recognition(img)
-        return label
-        
-        
+ 
 
 if __name__ == '__main__':
     if len(sys.argv)!=3:
@@ -173,9 +174,9 @@ if __name__ == '__main__':
     dir_path=sys.argv[1]
     #dir_path='/Users/xcbfreedom/projects/data/dogs_vs_cats'
     if sys.argv[2]=="simple":
-        #browse_images.simple_browse(dir_path,img_handle=detect_and_draw)
-        browse_images.simple_browse(dir_path,img_handle=detect_dogs)
+        browse_images.simple_browse(dir_path,img_handle=detect_by_slide_windows)
+        #browse_images.simple_browse(dir_path,img_handle=detect_by_harr_adboost,toShow=False)
     elif sys.argv[2]=="random":
-        #browse_images.random_browse(dir_path)
-        browse_images.random_browse(dir_path,img_handle=detect_dogs)
+        browse_images.random_browse(dir_path,img_handle=detect_by_slide_windows)
+        #browse_images.random_browse(dir_path,img_handle=detect_by_harr_adboost)
     #(img)
