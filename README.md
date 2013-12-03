@@ -26,6 +26,14 @@
             METHOD*_trained_model.pkl -- trained model using METHOD*
             pringle_METHOD*.csv     -- Kaggle submission data using METHOD*
 
+        CIFAR-10
+            train/ -- 50000 train pictures of size 32*32 (color) , named:Id.jpg
+            test/ -- 100000 test pictures of size 32*32
+            trainLabels.csv -- Id,Label
+            trainIdCls.csv -- Id,Cls
+            train_feature_pixel_v.csv -- Id,pixel[0][0],pixel[0][1],....,
+            train_feature_Cls_pixelv.csv -- Cls,pixel[0][0],....,
+
 ./plot  ---  some tools for data plot
 
 ./reports  -- some test report or plot results 
