@@ -53,7 +53,23 @@ def resized_pixel_fe(DataHome, src_img_route, train_feature_filename, valid_feat
         print cmd
         os.system(cmd)
 
-DogVsCat_DataHome = "/home/hphp/Documents/data/Kaggle/DogVsCatData/"
-resized_pixel_fe(DogVsCat_DataHome, "train/", DogVsCat_DataHome+"DogVsCat_train_feature_1w.csv", DogVsCat_DataHome+"DogVsCat_valid_feature_1w.csv")
+def g_resized_pixel_fe(cmd_part1, t_range, period):
+
+    total = int(t_range/period) + 1
+    print total
+    for rr in range(total):
+        start = rr * period
+        end = min((rr+1)*period, t_range)
+        if start >= end :
+            break
+        cmd = cmd_part1 + " " + str(start) +  " " + str(end)
+        print cmd
+        os.system(cmd)
+
+piclist = os.listdir("/home/hphp/Documents/data/Kaggle/CIFAR-10/train/")
+t_range = len(piclist)
+g_resized_pixel_fe("python feature_extraction_pixel_frm_img.py /home/hphp/Documents/data/Kaggle/CIFAR-10/ train/ train_feature_pixel_v.csv 32 32", t_range, 1000)
+#DogVsCat_DataHome = "/home/hphp/Documents/data/Kaggle/DogVsCatData/"
+#resized_pixel_fe(DogVsCat_DataHome, "train/", DogVsCat_DataHome+"DogVsCat_train_feature_1w.csv", DogVsCat_DataHome+"DogVsCat_valid_feature_1w.csv")
 #color_HSV_feature_extraction(DogVsCat_DataHome,"test1/","test.csv")
 #color_HSV_feature_extraction(DogVsCat_DataHome,"train/","train.csv")
