@@ -31,8 +31,8 @@ mod_labels = [
 ]
 mod_labels = tdtf.read_s_feature_from_csv(filname=mod_label_filename, limit=None, header_n=1)
 
-period = 10
-t_len = 500 #len(t_feature_list)
+period = 1000
+t_len = 50000 #len(t_feature_list)
 print t_len
 for i in range(0,100):
     start_index = i*period
@@ -40,9 +40,8 @@ for i in range(0,100):
     if start_index >= end_index:
         break
 
-    f_feature_list = tdtf.read_s_feature_from_csv(filname=from_feature_filename, limit=period, header_n=start_index + 0)
+    f_feature_list = tdtf.read_s_feature_from_csv(filname=from_feature_filename, limit=period, header_n=start_index+0)
     t_feature_list = []
-    print "len", len(f_feature_list)
     for feature in f_feature_list:
         for pair in mod_labels:
             if feature[0] == str(pair[0]):
@@ -50,4 +49,5 @@ for i in range(0,100):
                 break
         t_feature_list.append(feature)
 
+    print "len", len(t_feature_list), len(f_feature_list), start_index
     tdtf.append_content_to_csv(t_feature_list, to_feature_filename)

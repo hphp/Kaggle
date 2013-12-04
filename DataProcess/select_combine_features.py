@@ -29,7 +29,7 @@ to_feature_fname_list = [to_train_feature_filename, to_valid_feature_filename]
 
 features_list = []
 for fname in from_feature_fname_list:
-    t_f_list = tdtf.read_feature_from_csv(filname=fname, limit=10, header_n=0)
+    t_f_list = tdtf.read_feature_from_csv(filname=fname, limit=None, header_n=0)
     features_list += (t_f_list)
 
 train_index_list = random.sample(range(len(features_list)), len(features_list)/2 )
@@ -44,5 +44,5 @@ for i in range(len(features_list)):
 
 print len(train_features_list)
 print len(valid_features_list),len(valid_features_list[0])
-#tdtf.wr_content_to_csv(train_features_list,to_train_feature_filename)
-#tdtf.wr_content_to_csv(valid_features_list,to_valid_feature_filename)
+tdtf.wr_content_to_csv(train_features_list,to_train_feature_filename)
+tdtf.wr_content_to_csv(valid_features_list,to_valid_feature_filename)

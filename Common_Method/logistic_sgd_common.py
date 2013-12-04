@@ -39,7 +39,17 @@ valid_dataset_route = DataHome + "DogVsCat_bghead_train_feature_2c_2500.csv"
 train_model_route = DataHome + "DogVsCat_bghead2c_model_ls.np.pkl"
 layer0_input_shape = (50, 50)
 layer0_output_shape = 2
-if_load_trained_model = False #True 
+
+P_title = "CIFAR"
+DataHome = "/home/hphp/Documents/data/Kaggle/CIFAR-10/"
+train_dataset_route = DataHome + "CIFAR_train_feature.csv"
+valid_dataset_route = DataHome + "CIFAR_train_feature.csv"
+train_model_route = DataHome + "CIFAR_ls.np.pkl"
+layer0_input_shape = (32, 32)
+layer0_output_shape = 10
+
+
+if_load_trained_model = True 
 
 def sgd_optimization_mnist(tr_start_index=1, tr_limit=5000, vl_start_index=1, vl_limit=5000,
                            learning_rate=0.015, n_epochs=5000
@@ -194,6 +204,7 @@ def sgd_optimization_mnist(tr_start_index=1, tr_limit=5000, vl_start_index=1, vl
                     best_validation_loss = this_validation_loss
 
                     # load trained_model to 
+                    '''
                     layer_state = classifier.__getstate__()
                     trained_model_list = [layer_state]
                     trained_model_array = numpy.asarray(trained_model_list)
@@ -201,6 +212,7 @@ def sgd_optimization_mnist(tr_start_index=1, tr_limit=5000, vl_start_index=1, vl
                     cPickle.dump([1,2,3], classifier_file, protocol=2)
                     numpy.save(classifier_file, trained_model_array)
                     classifier_file.close()
+                    '''
                     '''
                     test_losses = [test_model(i)
                                    for i in xrange(n_test_batches)]
@@ -231,26 +243,24 @@ def sgd_optimization_mnist(tr_start_index=1, tr_limit=5000, vl_start_index=1, vl
     output_file.close()
 
 def diff_learning_rate_anls():
-    '''
-    for c_learning_rate in numpy.arange(0.01, 0.02, 0.005):
-        title = "ls_anls_" + str(c_learning_rate)
+    for c_learning_rate in numpy.arange(0.04, 0.055, 0.005):
+        title = P_title + "_ls_anls_" + str(c_learning_rate) + "_5000" 
         name = title + ".out"
         sgd_optimization_mnist(tr_start_index=0, tr_limit=5000, vl_start_index=0, vl_limit=5000
                                , learning_rate=float(c_learning_rate)
                                , n_epochs=5000
                                , output_filename=name)
-    '''
-    for c_learning_rate in numpy.arange(0.01, 0.02, 0.005):
-        title = "ls_anls_" + str(c_learning_rate)
+    for c_learning_rate in numpy.arange(0.04, 0.055, 0.005):
+        title = P_title + "_ls_anls_" + str(c_learning_rate) + "_5000" 
         name = title + ".out"
         cmd = "./ls_anls.sh " + name + " > " + title + ".excel"
         os.system(cmd)
-    for c_learning_rate in numpy.arange(0.01, 0.02, 0.005):
-        title = "ls_anls_" + str(c_learning_rate)
+    for c_learning_rate in numpy.arange(0.04, 0.055, 0.005):
+        title = P_title + "_ls_anls_" + str(c_learning_rate) + "_5000" 
         name = title + ".out"
         cmd = "./ls_vl_anls.sh " + name + " > " + title + ".vl.excel"
         os.system(cmd)
 
 if __name__ == '__main__':
-    sgd_optimization_mnist()
-    #diff_learning_rate_anls()
+    #sgd_optimization_mnist()
+    diff_learning_rate_anls()

@@ -169,7 +169,7 @@ def read_feature_from_csv(filname="train.csv", limit=None, header_n = 1):
     index = 0
     for row in csv_reader:
         index += 1
-        if (header_n == 1) & (index <= header_n ):
+        if index <= header_n :
             continue
         row = map ( int , (row[0:]))
         data.append(row)
@@ -185,10 +185,10 @@ def read_s_feature_from_csv(filname="train.csv", limit=None, header_n = 1):
     index = 0
     for row in csv_reader:
         index += 1
-        if (header_n == 1) & (index <= header_n ):
+        if index <= header_n:
             continue
         row = map ( str, (row[0:]))
         data.append(row)
-        if limit != None and index == limit + header_n:
+        if limit != None and index >= limit + header_n:
             break
     return data
