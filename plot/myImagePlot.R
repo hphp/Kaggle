@@ -1,5 +1,24 @@
+library("EBImage")
+
+displayMatrix<-function(m){
+    #use the EImage function.   
+    display(m/255,method="raster") 
+}
+
+rowToMatrix<-function(data_row, nrow, ncol){
+    #cast to matrix
+    m = as.matrix(data_row,rownames.force=NA) 
+    m = matrix(m,nrow,ncol,byrow=TRUE) 
+    m
+}
+
 # ----- Define a function for plotting a matrix ----- #
-myImagePlot <- function(x, ...){
+plotMatrix<- function(x, ...){
+     if(nrow(x)>28 || ncol(x)>28)
+     {
+        stop("the size of matrix should't be lager than 28.")
+     }
+     storage.mode(x) <- "integer"
      min <- min(x)
      max <- max(x)
      yLabels <- rownames(x)

@@ -1,12 +1,12 @@
 #!/usr/bin/R
 source("./myImagePlot.R")
 library("EBImage")
-#lenac = readImage(system.file("images", "lena-color.png", package="EBImage"))
-image=readImage("../../data/dogs_vs_cats/cat.13.jpg")
-r=getFrame(image,2)
-#b=as.matrix(images[6,2:785],rownames.force=NA) 
-r=resize(r,28,28)
-b=ceiling(r*256)
+image=readImage("/Users/xcbfreedom/projects/data/Kaggle/DogVsCatData/train/cat.13.jpg")
+
+
 #display the image 
-#print(b)
-myImagePlot(t(imageData(b))) 
+displayMatrix(image*255) 
+
+#display the one color component
+r=getFrame(image,1)
+plotMatrix(resize(r*255,28,28)) 
