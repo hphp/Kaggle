@@ -47,6 +47,24 @@ layer2_input_img_size = (int((layer1_input_img_size[0]+1-filter1_shape[0])/2), i
 
 N_OUT = 2 
 
+DataHome = "../../data/Kaggle/CIFAR-10/"
+train_dataset_route = DataHome + "CIFAR_train_feature.csv"
+valid_dataset_route = DataHome + "CIFAR_valid_feature.csv"
+train_model_route = DataHome + "CIFAR_lenet.np.pkl"
+if_trained_yet = False
+
+rng = numpy.random.RandomState(23455)
+nkerns=[20, 50]
+batch_size = 5000 
+
+layer0_input_img_size = (32, 32) # ishape
+filter0_shape = (9, 9)
+layer1_input_img_size = (int((layer0_input_img_size[0]+1-filter0_shape[0])/2), int((layer0_input_img_size[1]+1-filter0_shape[1])/2))
+filter1_shape = (5, 5)
+layer2_input_img_size = (int((layer1_input_img_size[0]+1-filter1_shape[0])/2), int((layer1_input_img_size[1]+1-filter1_shape[1])/2))
+
+N_OUT = 10
+
 # allocate symbolic variables for the data
 index = T.lscalar()  # index to a [mini]batch
 x = T.matrix('x')   # the data is presented as rasterized images
@@ -82,11 +100,11 @@ layer2_input = layer1.output.flatten(2)
 
 # construct a fully-connected sigmoidal layer
 layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * layer2_input_img_size[0] * layer2_input_img_size[1],
-                     n_out=100, activation=T.tanh \
+                     n_out=500, activation=T.tanh \
                      )
 
 # classify the values of the fully-connected sigmoidal layer
-layer3 = LogisticRegression(input=layer2.output, n_in=100, n_out=N_OUT\
+layer3 = LogisticRegression(input=layer2.output, n_in=500, n_out=N_OUT\
                             )
 
 def load_trained_model():
@@ -155,10 +173,12 @@ def load_trained_model():
                                     W=layer3_state[0], b=layer3_state[1] \
                                 )
 
-def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, learning_rate=0.01, n_epochs=200):
+def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, output_filename="tmp.file", learning_rate=0.15, n_epochs=200):
 
     global train_dataset_route
     global valid_dataset_route
+
+    output_file = open(output_filename, 'w')
 
     print train_dataset_route, type(train_dataset_route)
     """
@@ -252,6 +272,9 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, learning
     min_train_cost = 10000
     decreasing_num = 0
 
+    last_train_err = 1
+    last_train_cost = 1
+
     while (epoch < n_epochs) and (not done_looping):
         epoch = epoch + 1
         for minibatch_index in xrange(n_train_batches):
@@ -260,11 +283,19 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, learning
 
             if iter % 100 == 0:
                 print 'training @ iter = ', iter , ' patience = ' , patience
-            cost_ij, error_rate, par = train_model(minibatch_index)
-            print('epoch %i, minibatch %i/%i, train cost %.2f , error rate %.2f %% , paramsW00 %f ' % \
-                  (epoch, minibatch_index + 1, n_train_batches, \
-                   cost_ij, error_rate*100., par))
+            cost_ij, train_err, par = train_model(minibatch_index)
             
+            decreasing_rate = (last_train_err - train_err) / (last_train_err) * 100.
+            last_train_err = train_err
+            c_d_rate = (last_train_cost - cost_ij) / (last_train_cost) * 100.
+            last_train_cost = cost_ij 
+            print ('epoch %i, minibatch %i/%i, train_cost %f , train_error %.2f %%, decreasing rate %f %%, cost_decreasing rate %f %%, W00 ' % \
+                (epoch, minibatch_index + 1, n_train_batches,
+                cost_ij,
+                train_err* 100.
+                ,decreasing_rate
+                ,c_d_rate))
+
             #print layer1.params[0:1][0][0:3]
             #print layer2.params[0:1][0][0:3]
             if cost_ij < min_train_cost:
@@ -322,15 +353,15 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, learning
     print('Best validation score of %f %% obtained at iteration %i,'\
           'with test performance %f %%' %
           (best_validation_loss * 100., best_iter + 1, test_score * 100.))
-
-    if_trained_yet = True
+          
+    output_file.close()
 
 def run_train():
     if if_trained_yet:
         load_trained_model()
     train_by_lenet5( \
-        tr_start_index=1, tr_limit=100 , \
-        vl_start_index=1, vl_limit=100 \
+        tr_start_index=0, tr_limit=25000, \
+        vl_start_index=0, vl_limit=25000 \
     )
 
 if __name__ == '__main__':

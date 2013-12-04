@@ -19,6 +19,14 @@ bg_feature_filename = DataHome + "DogVsCat_bg_feature_2500.csv"
 from_feature_fname_list = [bg_feature_filename, from_train_feature_filename, from_valid_feature_filename]
 to_feature_fname_list = [to_train_feature_filename, to_valid_feature_filename]
 
+DataHome = "../../data/Kaggle/CIFAR-10/"
+to_train_feature_filename = DataHome + "CIFAR_train_feature.csv"
+to_valid_feature_filename = DataHome + "CIFAR_valid_feature.csv"
+from_feature_filename = DataHome + "train_feature_Cls_pixelv.csv"
+
+from_feature_fname_list = [from_feature_filename]
+to_feature_fname_list = [to_train_feature_filename, to_valid_feature_filename]
+
 features_list = []
 for fname in from_feature_fname_list:
     t_f_list = tdtf.read_feature_from_csv(filname=fname, limit=None, header_n=0)
