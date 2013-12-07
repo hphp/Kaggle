@@ -44,18 +44,19 @@ filter0_shape = (20, 20)
 layer1_input_img_size = (int((layer0_input_img_size[0]+1-filter0_shape[0])/2), int((layer0_input_img_size[1]+1-filter0_shape[1])/2))
 filter1_shape = (15, 15)
 layer2_input_img_size = (int((layer1_input_img_size[0]+1-filter1_shape[0])/2), int((layer1_input_img_size[1]+1-filter1_shape[1])/2))
+layer2_out = 500
 
 N_OUT = 2 
 
 DataHome = "../../data/Kaggle/CIFAR-10/"
-train_dataset_route = DataHome + "CIFAR_train_feature.csv"
-valid_dataset_route = DataHome + "CIFAR_valid_feature.csv"
-train_model_route = DataHome + "CIFAR_lenet.np.pkl"
+train_dataset_route = DataHome + "CIFAR_train4_feature.csv"
+valid_dataset_route = DataHome + "CIFAR_valid1_feature.csv"
+train_model_route = DataHome + "CIFAR_lenet_0.15_w41_ep100.np.pkl"
 if_trained_yet = False
 
 rng = numpy.random.RandomState(23455)
 nkerns=[20, 50]
-batch_size = 5000 
+batch_size = 5000
 
 layer0_input_img_size = (32, 32) # ishape
 filter0_shape = (9, 9)
@@ -64,6 +65,26 @@ filter1_shape = (5, 5)
 layer2_input_img_size = (int((layer1_input_img_size[0]+1-filter1_shape[0])/2), int((layer1_input_img_size[1]+1-filter1_shape[1])/2))
 
 N_OUT = 10
+
+'''
+DataHome = "../../data/Kaggle/MNISTData/"
+train_dataset_route = DataHome + "train.csv"
+valid_dataset_route = DataHome + "valid.csv"
+train_model_route = DataHome + "MNIST_lenet.np.pkl"
+if_trained_yet = True
+
+layer0_input_img_size = (28, 28) # ishape
+filter0_shape = (5, 5)
+layer1_input_img_size = (int((layer0_input_img_size[0]+1-filter0_shape[0])/2), int((layer0_input_img_size[1]+1-filter0_shape[1])/2))
+filter1_shape = (5, 5)
+layer2_input_img_size = (int((layer1_input_img_size[0]+1-filter1_shape[0])/2), int((layer1_input_img_size[1]+1-filter1_shape[1])/2))
+
+N_OUT = 10
+
+rng = numpy.random.RandomState(23455)
+nkerns=[20, 50]
+batch_size = 250
+'''
 
 # allocate symbolic variables for the data
 index = T.lscalar()  # index to a [mini]batch
@@ -100,11 +121,11 @@ layer2_input = layer1.output.flatten(2)
 
 # construct a fully-connected sigmoidal layer
 layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * layer2_input_img_size[0] * layer2_input_img_size[1],
-                     n_out=500, activation=T.tanh \
+                     n_out=layer2_out, activation=T.tanh \
                      )
 
 # classify the values of the fully-connected sigmoidal layer
-layer3 = LogisticRegression(input=layer2.output, n_in=500, n_out=N_OUT\
+layer3 = LogisticRegression(input=layer2.output, n_in=layer2_out, n_out=N_OUT\
                             )
 
 def load_trained_model():
@@ -164,16 +185,16 @@ def load_trained_model():
 
     # construct a fully-connected sigmoidal layer
     layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * layer2_input_img_size[0] * layer2_input_img_size[1],
-                         n_out=100, activation=T.tanh, \
+                         n_out=layer2_out, activation=T.tanh, \
                          W=layer2_state[0], b=layer2_state[1] \
                          )
 
     # classify the values of the fully-connected sigmoidal layer
-    layer3 = LogisticRegression(input=layer2.output, n_in=100, n_out=N_OUT, \
+    layer3 = LogisticRegression(input=layer2.output, n_in=layer2_out, n_out=N_OUT, \
                                     W=layer3_state[0], b=layer3_state[1] \
                                 )
 
-def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, output_filename="tmp.file", learning_rate=0.15, n_epochs=200):
+def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, output_filename="tmp.file", learning_rate=0.13, n_epochs=5000):
 
     global train_dataset_route
     global valid_dataset_route
@@ -249,7 +270,7 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, output_f
     ###############
     print '... training'
     # early-stopping parameters
-    patience = 500 # look as this many examples regardless
+    patience = 50000 # look as this many examples regardless
     patience_increase = 2  # wait this much longer when a new best is
                            # found
     improvement_threshold = 0.995  # a relative improvement of this much is
@@ -287,9 +308,11 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, output_f
             
             decreasing_rate = (last_train_err - train_err) / (last_train_err) * 100.
             last_train_err = train_err
+            if last_train_err == 0:
+                last_train_err += 0.0000001
             c_d_rate = (last_train_cost - cost_ij) / (last_train_cost) * 100.
             last_train_cost = cost_ij 
-            print ('epoch %i, minibatch %i/%i, train_cost %f , train_error %.2f %%, decreasing rate %f %%, cost_decreasing rate %f %%, W00 ' % \
+            print >> output_file, ('epoch %i, minibatch %i/%i, train_cost %f , train_error %.2f %%, decreasing rate %f %%, cost_decreasing rate %f %%, W00 ' % \
                 (epoch, minibatch_index + 1, n_train_batches,
                 cost_ij,
                 train_err* 100.
@@ -301,7 +324,6 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, output_f
             if cost_ij < min_train_cost:
                 decreasing_num = 0
                 min_train_cost = cost_ij
-                '''
                 layer0_state = layer0.__getstate__()
                 layer1_state = layer1.__getstate__()
                 layer2_state = layer2.__getstate__()
@@ -312,7 +334,6 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, output_f
                 cPickle.dump([1,2,3], classifier_file, protocol=2)
                 numpy.save(classifier_file, trained_model_array)
                 classifier_file.close()
-                ''' 
             else:
                 print "decreasing"
                 decreasing_num += 1
@@ -325,7 +346,7 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, output_f
                 validation_losses = [validate_model(i) for i
                                      in xrange(n_valid_batches)]
                 this_validation_loss = numpy.mean(validation_losses)
-                print('epoch %i, minibatch %i/%i, validation error %f %%' % \
+                print >> output_file, ('epoch %i, minibatch %i/%i, validation error %f %%' % \
                       (epoch, minibatch_index + 1, n_train_batches, \
                        this_validation_loss * 100.))
 
@@ -349,8 +370,8 @@ def train_by_lenet5(tr_start_index, tr_limit, vl_start_index, vl_limit, output_f
     print >> sys.stderr, ('The code for file ' +
                           os.path.split(__file__)[1] +
                           ' ran for %.2fm' % ((end_time - start_time) / 60.))
-    print('Optimization complete.')
-    print('Best validation score of %f %% obtained at iteration %i,'\
+    print >> output_file, ('Optimization complete.')
+    print >> output_file, ('Best validation score of %f %% obtained at iteration %i,'\
           'with test performance %f %%' %
           (best_validation_loss * 100., best_iter + 1, test_score * 100.))
           
@@ -360,8 +381,9 @@ def run_train():
     if if_trained_yet:
         load_trained_model()
     train_by_lenet5( \
-        tr_start_index=0, tr_limit=25000, \
-        vl_start_index=0, vl_limit=25000 \
+        tr_start_index=0, tr_limit=None, \
+        vl_start_index=0, vl_limit=None, \
+        output_filename = "CIFAR_lenet_0.15_w41_ep100.out"
     )
 
 if __name__ == '__main__':
