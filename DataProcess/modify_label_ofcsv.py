@@ -12,8 +12,10 @@ DataHome = "../../data/Kaggle/CIFAR-10/"
 #to_feature_filename = DataHome + "trainIdCls.csv"
 #from_feature_filename = DataHome + "trainLabels.csv"
 mod_label_filename = DataHome + "trainIdCls.csv"
-to_feature_filename = DataHome + "train_feature_Cls_pixelv.csv"
-from_feature_filename = DataHome + "train_feature_pixel_v.csv"
+#to_feature_filename = DataHome + "train_feature_Cls_pixelv.csv"
+#from_feature_filename = DataHome + "train_feature_pixel_v.csv"
+to_feature_filename = DataHome + "CIFAR_upload_lenet_0.15_w41_ep100.csv"
+from_feature_filename = DataHome + "CIFAR_lenet_0.15_w41_ep100.csv"
 
 mod_labels = [[0,0],[1,0],[2,1]]
 #awk -F ',' '{a[$2]++}END{for(i in a)if(i!="label")print ",[\""i"\",\""b++"\"]"}' ~/Documents/data/Kaggle/CIFAR-10/trainLabels.csv
@@ -29,12 +31,12 @@ mod_labels = [
 ,["deer","8"]
 ,["ship","9"]
 ]
-mod_labels = tdtf.read_s_feature_from_csv(filname=mod_label_filename, limit=None, header_n=1)
+#mod_labels = tdtf.read_s_feature_from_csv(filname=mod_label_filename, limit=None, header_n=1)
 
 period = 1000
-t_len = 50000 #len(t_feature_list)
+t_len = 300001 #len(t_feature_list)
 print t_len
-for i in range(0,100):
+for i in range(0,301):
     start_index = i*period
     end_index = min((i+1)*period, t_len)
     if start_index >= end_index:
@@ -44,8 +46,8 @@ for i in range(0,100):
     t_feature_list = []
     for feature in f_feature_list:
         for pair in mod_labels:
-            if feature[0] == str(pair[0]):
-                feature[0] = pair[1]
+            if feature[1] == str(pair[1]):
+                feature[1] = pair[0]
                 break
         t_feature_list.append(feature)
 
